@@ -1,0 +1,90 @@
+*, html, body, [class*="css"] {
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+.stApp header {
+    z-index: 1;
+    background: transparent;
+}
+.st-d4.st-b8.st-d5 {
+    width: 30%;
+    }
+    .navbar {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 96%;
+    padding: 0px;
+    z-index: 1;
+    padding-left: 20px;
+    padding-right: 39px;
+    background: transparent;
+    margin-top: 30px;
+    margin-left: 50px;
+    }
+    .navbar img {
+        width: 70px;
+        height: 50px;  
+    }
+    .navbar-brand img {
+    max-height: 45px !important;
+    }
+    [data-testid="stHeader"] {
+    z-index: 0;
+    background: rgba(0,0,0,0);
+    }
+    .navbar {
+        padding-right: 10px;
+        padding-left: 30px;
+    }
+
+    #nav-a {
+        text-decoration: none;
+        color: black;
+        font-weight: 500;
+        font-size: large;
+    }
+
+    .login-button {
+        position: absolute;
+        right: 10%;
+        margin-right: 30px;
+        margin-top: 5px;
+        color: black;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: large;
+        display: inline;
+        cursor: pointer;
+    }
+
+    .signup-button {
+        position: absolute;
+        right: 0;
+        margin-right: 50px;
+        margin-top: 5px;
+        color: black;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: large;
+        display: inline;
+        cursor: pointer;
+    }
+
+    a:link {
+        color: red;
+        background-color: transparent;
+        text-decoration: none;
+     }
+     a:visited {
+        color: black;
+        background-color: transparent;
+        text-decoration: none;
+     }
+     a:active {
+        color: black;
+        background-color: transparent;
+     }

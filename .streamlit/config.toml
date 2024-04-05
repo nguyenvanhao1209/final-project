@@ -1,0 +1,7 @@
+[client]
+
+caching = true
+displayEnabled = true
+showErrorDetails = true
+toolbarMode = "auto"
+showSidebarNavigation = false
