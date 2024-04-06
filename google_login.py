@@ -6,8 +6,9 @@ from httpx_oauth.clients.google import GoogleOAuth2
 from model import User
 from utils import get_name_email
 from authentication import Auth
+import streamlit.components.v1 as components
 
-cred = credentials.Certificate("streamlit-ml-f44ba64799b5.json")
+cred = credentials.Certificate("streamlit-fami-eb9b5cf03485.json")
 
 try:
     firebase_admin.get_app()
@@ -40,7 +41,7 @@ def get_logged_in_user_email():
                         user = auth.create_user(email=user_email, email_verified=True, display_name=name)
                     auth_instance.setLoginUser(User(user.uid, name, user.email))
                     return auth_instance
-        return None
+        return auth_instance
     except:
         pass
 
@@ -50,4 +51,37 @@ def google_login():
         scope=["email", "profile"],
         extras_params={"access_type": "offline"},
     ))
-    st.markdown(f'<a href="{authorization_url}" target="_self">Login</a>', unsafe_allow_html=True)
+    custom_button = f"""
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="//fonts.googleapis.com/css?family=Open+Sans"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+    <div style="background: transparent;">
+        <div style="width:184px; height: 42px; background-color: #4285f4; border-radius: 2px; box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.25); position: relative; cursor: pointer;" onclick="window.open('{authorization_url}', '_blank');">
+            <div style="position: absolute; margin-top: 1px; margin-left: 1px; width: 40px; height: 40px; border-radius: 2px; background-color: #fff;">
+                <img style="position: absolute; margin-top: 11px; margin-left: 11px; width: 18px; height: 18px;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png" />
+            </div>
+            <p style="float: right; margin: 11px 11px 0 0; color: #fff; font-size: 14px; letter-spacing: 0.2px; font-family: 'Roboto';">
+            <b>Sign in with Google</b>
+            </p>
+        </div>
+    </div>
+    """
+    components.html(custom_button, height=50)
