@@ -28,20 +28,22 @@ def login():
     with col1b:
         with card_container(key="login-form"):
             st.markdown("#### Login to my app")
-
-            email = st.text_input("Email", placeholder="Input your email")
-            password = st.text_input("Password", type="password", placeholder="Input your password")
+            col1, col2 = st.columns([100,1])
+            
+            with col1:
+                email = st.text_input("Email", placeholder="Input your email")
+                password = st.text_input("Password", type="password", placeholder="Input your password")
             
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("Login", key='login-btn', type="primary"):
+                if st.button("Login", key='login-btn', type="primary", use_container_width=True):
                     try:
                         user = Auth.sign_in(email, password)
                         st.switch_page('pages/home.py')
                     except Exception as e:
                         st.error(f"Error: {e}")
             with col2:
-                if st.button("Sign Up", key='signup-btn', type="primary"):
+                if st.button("Sign Up", key='signup-btn', type="primary", use_container_width=True):
                     st.switch_page('pages/signup.py')
             
             google_login()
