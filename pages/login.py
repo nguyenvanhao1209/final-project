@@ -24,8 +24,8 @@ with open( "style.css" ) as css:
 
 
 def login():
-    col1b, col2b = st.columns(2)
-    with col1b:
+    col1b, col2b, col3b = st.columns([1,2,3])
+    with col2b:
         with card_container(key="login-form"):
             st.markdown("#### Login to my app")
             col1, col2 = st.columns([100,1])
@@ -48,7 +48,8 @@ def login():
             
             google_login()
             
-    with col2b:
+            
+    with col3b:
         url = requests.get( 
         "https://lottie.host/97faaffa-7b41-495e-887e-1319f6f89d6d/vaa65SdYvp.json") 
         url_json = dict() 
