@@ -12,4 +12,4 @@ class Post:
     content: str
     author: User
     date: str
-    url: str
+    file: str

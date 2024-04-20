@@ -40,7 +40,7 @@ def get_logged_in_user_email():
                         user = auth.create_user(email=user_email, email_verified=True, display_name=name)
                     auth_instance.setLoginUser(User(user.uid, name, user.email))
                     return auth_instance
-        return None
+        return auth_instance
     except:
         pass
 
