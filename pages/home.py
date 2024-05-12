@@ -1,18 +1,11 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 from PIL import Image
 from streamlit_option_menu import option_menu
 from streamlit_timeline import timeline
-import numpy as np
-import math
 import os
-import plotly.graph_objects as go
-import scipy.stats as stats
-from scipy.stats import t
 import pygwalker as pyg
 import streamlit.components.v1 as stc
-from modules import Chart, Info, Regression, Classification, Clustering
 from authentication import Auth
 from services.google_login import get_logged_in_user_email
 
@@ -23,6 +16,8 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+from modules import Chart, Info, Regression, Classification, Clustering
+from components import Navbar
 
 with open( "style.css" ) as css:
     st.markdown( f'<style>{css.read()}</style>' , unsafe_allow_html= True)
@@ -95,72 +90,6 @@ def footer():
     )
 
 
-def search():
-    st.markdown("""
-            <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-            <style>
-                body {
-                font-family: Sans serif;
-                }
-
-                * {
-                box-sizing: border-box;
-                }
-
-                form.example input[type=text] {
-                padding: 10px;
-                font-size: 17px;
-                border: 2px solid white;
-                float: left;
-                width: 700px;  /* Set width to 100px */
-                background: #f1f1f1;
-                border-radius: 15px;
-                }
-
-                form.example button {
-                float: left;
-                width: 100px;  /* Set width to auto to adjust based on content */
-                padding: 10px;
-                background: #FF4B4B;
-                color: white;
-                font-size: 17px;
-                border: 2px solid white;
-                border-left: none;
-                cursor: pointer;
-                border-radius: 15px;
-                }
-
-                form.example button:hover {
-                background: #FF4B4B;
-                }
-
-                form.example::after {
-                content: "";
-                clear: both;
-                display: table;
-                }
-            </style>
-            </head>
-            <body>
-            """,
-                unsafe_allow_html=True)
-
-    st.markdown("""
-            <form class="example" action="" style="margin:auto;max-width:800px">
-            <input type="text" placeholder="Search.." name="search2">
-            <button type="submit"><i class="fa fa-search"></i></button>
-            </form>""",
-                unsafe_allow_html=True)
-    st.markdown(
-        """
-                <head>
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-                </head>
-                """,
-        unsafe_allow_html=True
-    )
 
 
 @st.cache_data
@@ -222,21 +151,15 @@ def create_chart(data):
     pyg_html = pyg.walk(data,return_html=True)
     stc.html(pyg_html,scrolling=True,height=1000)
     
-    
-st.markdown(f"""
-    <nav class="navbar">
-        <a class="navbar-brand" href="#" id="nav-a">
-            <span>YOUR SAAS</span>
-        </a>
-    </nav>
-    """, unsafe_allow_html=True)
 
 def get_current_login():
     auth_instance = get_logged_in_user_email()
-    st.write(f"hello {auth_instance.LoginUser()}")
-
-    if st.button('Logout'):
-        logout()
+    col1, col2 = st.columns([2,1])
+    with col1:
+        st.markdown(f"### {auth_instance.LoginUser().name}")
+    with col2:
+        if st.button('Logout', type='primary'):
+            logout()
 
 def logout():
     Auth.logout()
@@ -244,8 +167,10 @@ def logout():
 
 # main function
 def main():
+    Navbar.navbar()
     with st.sidebar:
         get_current_login()
+           
         st.sidebar.markdown("---")
         st.markdown("#### Chọn chức năng ####")
         selected = option_menu(None, ["Dữ liệu", "Thống kê", "Trực quan hóa", "Hồi quy", "Phân lớp", "Phân cụm", "Datasets"],
@@ -258,6 +183,7 @@ def main():
             })
 
     with st.container():
+        
         with st.sidebar:
             st.sidebar.markdown("---")
             st.markdown("#### Tải lên dữ liệu ####")
@@ -268,15 +194,15 @@ def main():
             data = load_data(file)
 
             if selected == 'Dữ liệu':
-                search()
+                
                 Info.info(data)
 
             if selected == 'Thống kê':
-                search()
+                
                 analyze_data(data)
 
             if selected == 'Trực quan hóa':
-                search()
+                
                 st.write(" # Trực quan hóa dữ liệu # ")
                 st.write("#### Dữ liệu ####")
                 st.write("Data")
@@ -286,7 +212,7 @@ def main():
                 st.markdown("---")
 
             if selected == 'Hồi quy':
-                search()
+                
 
                 st.write(" # Hồi quy tuyến tính # ")
                 st.write("#### Dữ liệu ####")
@@ -303,7 +229,7 @@ def main():
                     Regression.lasso_regression(data)
 
             if selected == 'Phân lớp':
-                search()
+                
                 st.write(" # Phân lớp # ")
                 st.write("#### Dữ liệu ####")
                 st.write("Data")
@@ -323,7 +249,7 @@ def main():
                     Classification.svm_classification(edit_data)
 
             if selected == 'Phân cụm':
-                search()
+                
                 st.write(" # Phân cụm # ")
                 st.write("#### Dữ liệu ####")
                 st.write("Data")
@@ -352,6 +278,7 @@ def main():
             #     test_type = st.selectbox("", [None,"Kiểm định một mẫu", "Kiểm định nhiều mẫu", "Kiểm định phi tham số"])
             #     hypothesis_test(test_type, edit_data)
         else:
+            
             st.balloons()
             container = st.container()
             with container:

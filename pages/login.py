@@ -4,6 +4,7 @@ import streamlit_shadcn_ui as ui
 from services.google_login import google_login
 from local_components import card_container
 
+
 import json 
 import requests
 from streamlit_lottie import st_lottie 
@@ -26,8 +27,22 @@ with open( "style.css" ) as css:
 def login():
     col1b, col2b, col3b = st.columns([1,2,3])
     with col2b:
+        st.markdown(
+                    """
+                    <style>
+                    .c {
+                        margin-top: 90px ;
+                        }
+                    </style>
+    
+                    <div class="c"></div>
+                    """,
+                    unsafe_allow_html=True
+                )
+        
         with card_container(key="login-form"):
-            st.markdown("#### Login to my app")
+            
+            st.markdown("### Welcome back")
             col1, col2 = st.columns([100,1])
             
             with col1:
@@ -38,14 +53,14 @@ def login():
             with col1:
                 if st.button("Login", key='login-btn', type="primary", use_container_width=True):
                     try:
-                        user = Auth.sign_in(email, password)
-                        st.switch_page('pages/home.py')
-                    except Exception as e:
-                        st.error(f"Error: {e}")
+                            user = Auth.sign_in(email, password)
+                            st.switch_page('pages/home.py')    
+                    except Exception:
+                        st.toast("Someting went wrong", icon='🚨')
             with col2:
                 if st.button("Sign Up", key='signup-btn', type="primary", use_container_width=True):
                     st.switch_page('pages/signup.py')
-            
+
             google_login()
             
             

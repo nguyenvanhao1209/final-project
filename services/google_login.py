@@ -77,7 +77,7 @@ def google_login():
     ></script>
     <div style="background: transparent;">
      <a href="{authorization_url}" target="_self">
-        <div style="width:500px; height: 57.5px; background-color: #4285f4; border-radius: 2px; box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.25); position: relative; cursor: pointer;">
+        <div style="width:500px; height: 58px; background-color: #4285f4; border-radius: 2px; box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.25); position: relative; cursor: pointer;">
             <div style="position: absolute; margin-top: 1px; margin-left: 1px; width: 40px; height: 40px; border-radius: 2px; background-color: #fff;">
                 <img style="position: absolute; margin-top: 11px; margin-left: 11px; width: 18px; height: 18px;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png" />
             </div>
