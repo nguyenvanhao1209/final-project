@@ -17,14 +17,14 @@ with open( "style.css" ) as css:
     st.markdown( f'<style>{css.read()}</style>' , unsafe_allow_html= True)
 
 st.markdown(f"""
-    <nav class="navbar">
+    <header class="navbar st-emotion-cache-18ni7ap ezrtsby2">
         <a class="navbar-brand" href="#" id="nav-a">
             <img src="data:image/png;base64,{encoded_logo}" alt="logo" />
             <span>YOUR SAAS</span>
         </a>
         <a href="/login" target="_self" class="login-button">Login</a>
         <a href="/signup" target="_self" class="signup-button">Sign Up</a>
-    </nav>
+    </header>
     """, unsafe_allow_html=True)
 
 st.title("Welcome to Streamlit App")

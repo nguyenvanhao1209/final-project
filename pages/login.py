@@ -42,7 +42,7 @@ def login():
         
         with card_container(key="login-form"):
             
-            st.markdown("#### Login to my app")
+            st.markdown("### Welcome back")
             col1, col2 = st.columns([100,1])
             
             with col1:
@@ -53,14 +53,14 @@ def login():
             with col1:
                 if st.button("Login", key='login-btn', type="primary", use_container_width=True):
                     try:
-                        user = Auth.sign_in(email, password)
-                        st.switch_page('pages/home.py')
-                    except Exception as e:
-                        st.error(f"Error: {e}")
+                            user = Auth.sign_in(email, password)
+                            st.switch_page('pages/home.py')    
+                    except Exception:
+                        st.toast("Someting went wrong", icon='🚨')
             with col2:
                 if st.button("Sign Up", key='signup-btn', type="primary", use_container_width=True):
                     st.switch_page('pages/signup.py')
-            
+
             google_login()
             
             
