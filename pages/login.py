@@ -1,7 +1,7 @@
 import streamlit as st
 from authentication import Auth
 import streamlit_shadcn_ui as ui
-from google_login import google_login
+from services.google_login import google_login
 from local_components import card_container
 
 

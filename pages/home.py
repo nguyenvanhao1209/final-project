@@ -7,7 +7,7 @@ import os
 import pygwalker as pyg
 import streamlit.components.v1 as stc
 from authentication import Auth
-from google_login import get_logged_in_user_email
+from services.google_login import get_logged_in_user_email
 
 st.set_page_config(
     page_title="Streamlit App",
@@ -173,7 +173,7 @@ def main():
            
         st.sidebar.markdown("---")
         st.markdown("#### Chọn chức năng ####")
-        selected = option_menu(None, ["Dữ liệu", "Thống kê", "Trực quan hóa", "Hồi quy", "Phân lớp", "Phân cụm"],
+        selected = option_menu(None, ["Dữ liệu", "Thống kê", "Trực quan hóa", "Hồi quy", "Phân lớp", "Phân cụm", "Datasets"],
                                icons=['clipboard-data', 'table', "bar-chart-fill", 'rulers', 'diamond-half', 'bi-exclude'],
                                menu_icon="cast", default_index=0, styles={
                 "st": {"padding": "5!important", "background-color": "#fafafa"},
@@ -263,6 +263,9 @@ def main():
                     Clustering.dbscan_clustering(edit_data)
                 if class_type == 'OPTICS':
                     Clustering.optics_clustering(edit_data)
+
+            if selected == 'Datasets':
+                st.switch_page("pages/datasets.py")
 
             # if selected =='Kiểm định':
             #     search()
