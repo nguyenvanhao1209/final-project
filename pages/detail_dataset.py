@@ -55,9 +55,6 @@ def main():
         create_comment(new_comment, auth_instance.LoginUser(), datetime.now(), post)
 
     # Get and display comments
-    comments = list_comment(post)
-    for comment in comments:
-        st.write(f"{comment['author']['name']}: {comment['content']}")
 
 
 

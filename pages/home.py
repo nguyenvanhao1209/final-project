@@ -5,9 +5,21 @@ from streamlit_option_menu import option_menu
 from streamlit_timeline import timeline
 import os
 import pygwalker as pyg
-import streamlit.components.v1 as stc
 from authentication import Auth
 from services.google_login import get_logged_in_user_email
+from pygwalker.api.streamlit import StreamlitRenderer
+from services.post import list_post
+from PIL import Image
+import requests
+from io import BytesIO
+from utils import time_difference, format_file_size, get_file_extension
+import zipfile
+import io
+from utils import get_file
+import pandas as pd
+from services.comment import create_comment, list_comment
+from datetime import datetime
+from local_components import card_container
 
 st.set_page_config(
     page_title="Streamlit App",
@@ -17,77 +29,11 @@ st.set_page_config(
 )
 
 from modules import Chart, Info, Regression, Classification, Clustering
-from components import Navbar
+from components import Navbar, Footer
 
 with open( "style.css" ) as css:
     st.markdown( f'<style>{css.read()}</style>' , unsafe_allow_html= True)
 
-
-def footer():
-    st.markdown(
-        """
-        <head>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        </head>
-        <style>
-            footer
-            {
-            visibility:hidden;
-            }
-            .a {
-                
-                background-color: #f0f2f6;
-                padding: 20px;
-                text-align: center;
-            }
-            
-            .icon-list {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-
-            .icon-list-item {
-                margin: 10px;
-                text-align: center;
-                cursor: pointer;
-            }
-
-            .icon-list-item i {
-                display: block;
-                font-size: 20px;
-                color: black;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        """
-        <div class="a">
-            <h6>Liên hệ với tôi</h6>
-            <div class="icon-list">
-                <div class="icon-list-item">
-                    <a href="https://github.com" target="_blank">
-                        <i class="fab fa-github"></i>
-                    </a>
-                </div>
-                <div class="icon-list-item">
-                    <a href="https://twitter.com" target="_blank">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                </div>
-                <div class="icon-list-item">
-                    <a href="https://youtube.com" target="_blank">
-                        <i class="fab fa-youtube"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 
 
@@ -143,13 +89,13 @@ def analyze_data(data):
             data=summary_p(data).to_csv(index=False),
             file_name='data_analyze.csv',
             mime='text/csv')
-    footer()
+    
 
 
 #### Data visualization
 def create_chart(data):
-    pyg_html = pyg.walk(data,return_html=True)
-    stc.html(pyg_html,scrolling=True,height=1000)
+    pyg_app = StreamlitRenderer(data)
+    pyg_app.explorer()
     
 
 def get_current_login():
@@ -263,143 +209,192 @@ def main():
                     Clustering.dbscan_clustering(edit_data)
                 if class_type == 'OPTICS':
                     Clustering.optics_clustering(edit_data)
-
-            if selected == 'Datasets':
-                st.switch_page("pages/datasets.py")
-
-            # if selected =='Kiểm định':
-            #     search()
-            #     st.write(" # Kiểm định giả thuyết thống kê # ")
-            #     st.write("#### Dữ liệu ####")
-            #     st.write("Data")
-            #     edit_data= st.data_editor(data,use_st_width=True,num_rows="dynamic")
-            #     st.markdown("---")
-            #     st.write("#### Chọn phương thức muốn kiểm định ####")
-            #     test_type = st.selectbox("", [None,"Kiểm định một mẫu", "Kiểm định nhiều mẫu", "Kiểm định phi tham số"])
-            #     hypothesis_test(test_type, edit_data)
+        
         else:
+            if selected == 'Datasets':
+                st.write(" # Tập dữ liệu # ")
+                col1, col2 = st.columns([5,1])
+                with col1:
+                    st.write("Khám phá, phân tích và chia sẻ dữ liệu chất lượng")
+                with col2:
+                    if st.button('Upload your data', type='primary'):
+                        st.switch_page("pages/create_dataset.py")
+                    
+                st.markdown("---")
+                posts = list_post()
+                # Create a list to hold the columns
+                cols = [st.columns(3) for _ in range(len(posts) // 3 + (len(posts) % 3 > 0))]
+
+                for i, post in enumerate(posts):
+                    # Calculate the row and column index
+                    row = i // 3
+                    col = i % 3
+
+                    # Fetch the image from the URL
+                    response = requests.get(post.image)
+                    try:
+                        image = Image.open(BytesIO(response.content))
+                        
+                    except Exception:
+                        st.write("Unable to load image")
+
+                    # Display the post in a card
+                    with cols[row][col]:
+                        with card_container(key="dataset-card"):
+                            resized_image = image.resize((300,150), Image.LANCZOS)
+                            file_sizes = 0
+                            file_extensions = set()
+                            for file in post.files:
+                            # Get the file size from the 'Content-Length' header
+                                file_response = requests.head(file)
+                                file_size = file_response.headers.get('Content-Length', 'Unknown')
+                                file_sizes += int(file_size)
+                                file_extensions.add(get_file_extension(file))
+
+                            
+                            
+                            st.image(resized_image, use_column_width=True)
+                            st.write(f"Title: {post.title}")
+                            st.write(f"Author: {post.author.name}")
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                if len(post.files) == 1:
+                                    st.write(f"1 File")
+                                else:
+                                    st.write(f"{len(post.files)} Files")
+                                    
+                                st.write(f"File size: {format_file_size(file_sizes)}")
+                                
+                            with col2:
+                                st.write(f"Date: {time_difference(post.datetime.strftime('%Y-%m-%d %H:%M:%S'))}")
+                                st.write(f"Type: {file_extensions}")
+                                
+                            if st.button(f"Detail {post.title}", type='primary'):
+                                st.session_state.current_post = post
+                                st.switch_page("pages/detail_dataset.py")
+            else:    
+                st.balloons()
+                container = st.container()
+                with container:
+                    with st.spinner(text="Building line"):
+                        with open('timeline.json', "r", encoding="utf-8") as f:
+                            data = f.read()
+                            timeline(data, height=450, )
+                st.markdown(
+                    """
+                    <style>
+                    .b {
+                        margin-top: 50px ;
+                        }
+                    </style>
+
+                    <div class="b"></div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+                st.markdown(" ### Làm sao để sử dụng ?")
+                st.markdown(
+                    """
+                    <style>
+                    .b {
+                        margin-top: 50px ;
+                        }
+                    </style>
+
+                    <div class="b"></div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown("""
+                                        <head>
+                                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                                        </head>
+                                        <body>
+
+                                        <i class="fa-solid fa-1 fa-beat" style="font-size:70px;color: #ff4b4b;"></i>
+                                        <h5>Tải lên dữ liệu của bạn</h5>
+                                        </body>
+
+
+                                        """, unsafe_allow_html=True)
+                    image1 = Image.open("image/im1.png")
+                    st.image(image1)
+
+                    st.markdown(
+                        """
+                        <style>
+                        .b {
+                            margin-top: 50px ;
+                            }
+                        </style>
+
+                        <div class="b"></div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+                    st.markdown("""
+                                        <head>
+                                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                                        </head>
+                                        <body>
+
+                                        <i class="fa-solid fa-3 fa-beat" style="font-size:70px;color: #ff4b4b;"></i>
+                                        <h5>Bắt đầu tính toán </h5>
+                                        </body>
+
+
+                                        """, unsafe_allow_html=True)
+                    image3 = Image.open("image/im3.png")
+                    st.image(image3)
+
+                with col2:
+                    st.markdown("""
+                                        <head>
+                                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                                        </head>
+                                        <body>
+
+                                        <i class="fa-solid fa-2 fa-beat" style="font-size:70px;color: #ff4b4b;"></i>
+                                        <h5>Chọn chức năng mong muốn</h5>
+                                        </body>
+
+
+                                        """, unsafe_allow_html=True)
+                    image2 = Image.open("image/im2.png")
+                    st.image(image2)
+                    st.markdown(
+                        """
+                        <style>
+                        .b {
+                            margin-top: 50px ;
+                            }
+                        </style>
+
+                        <div class="b"></div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+                    st.markdown("""
+                                        <head>
+                                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                                        </head>
+                                        <body>
+
+                                        <i class="fa-solid fa-4 fa-beat" style="font-size:70px;color: #ff4b4b;"></i>
+                                        <h5>Tải xuống và tiếp tục công việc</h5>
+                                        </body>
+
+
+                                        """, unsafe_allow_html=True)
+                    image4 = Image.open("image/im4.png")
+                    st.image(image4)
+                container.markdown("---")
+                Footer.footer()
             
-            st.balloons()
-            container = st.container()
-            with container:
-                with st.spinner(text="Building line"):
-                    with open('timeline.json', "r", encoding="utf-8") as f:
-                        data = f.read()
-                        timeline(data, height=450, )
-            st.markdown(
-                """
-                <style>
-                .b {
-                    margin-top: 50px ;
-                    }
-                </style>
-
-                <div class="b"></div>
-                """,
-                unsafe_allow_html=True
-            )
-
-            st.markdown(" ### Làm sao để sử dụng ?")
-            st.markdown(
-                """
-                <style>
-                .b {
-                    margin-top: 50px ;
-                    }
-                </style>
-
-                <div class="b"></div>
-                """,
-                unsafe_allow_html=True
-            )
-
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown("""
-                                    <head>
-                                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-                                    </head>
-                                    <body>
-
-                                    <i class="fa-solid fa-1 fa-beat" style="font-size:70px;color: #ff4b4b;"></i>
-                                    <h5>Tải lên dữ liệu của bạn</h5>
-                                    </body>
-
-
-                                    """, unsafe_allow_html=True)
-                image1 = Image.open("image/im1.png")
-                st.image(image1)
-
-                st.markdown(
-                    """
-                    <style>
-                    .b {
-                        margin-top: 50px ;
-                        }
-                    </style>
-
-                    <div class="b"></div>
-                    """,
-                    unsafe_allow_html=True
-                )
-                st.markdown("""
-                                    <head>
-                                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-                                    </head>
-                                    <body>
-
-                                    <i class="fa-solid fa-3 fa-beat" style="font-size:70px;color: #ff4b4b;"></i>
-                                    <h5>Bắt đầu tính toán </h5>
-                                    </body>
-
-
-                                    """, unsafe_allow_html=True)
-                image3 = Image.open("image/im3.png")
-                st.image(image3)
-
-            with col2:
-                st.markdown("""
-                                    <head>
-                                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-                                    </head>
-                                    <body>
-
-                                    <i class="fa-solid fa-2 fa-beat" style="font-size:70px;color: #ff4b4b;"></i>
-                                    <h5>Chọn chức năng mong muốn</h5>
-                                    </body>
-
-
-                                    """, unsafe_allow_html=True)
-                image2 = Image.open("image/im2.png")
-                st.image(image2)
-                st.markdown(
-                    """
-                    <style>
-                    .b {
-                        margin-top: 50px ;
-                        }
-                    </style>
-
-                    <div class="b"></div>
-                    """,
-                    unsafe_allow_html=True
-                )
-                st.markdown("""
-                                    <head>
-                                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-                                    </head>
-                                    <body>
-
-                                    <i class="fa-solid fa-4 fa-beat" style="font-size:70px;color: #ff4b4b;"></i>
-                                    <h5>Tải xuống và tiếp tục công việc</h5>
-                                    </body>
-
-
-                                    """, unsafe_allow_html=True)
-                image4 = Image.open("image/im4.png")
-                st.image(image4)
-            container.markdown("---")
-            footer()
 
 
 if __name__ == "__main__":
