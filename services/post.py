@@ -55,6 +55,7 @@ def list_post():
     post_list = []
     for post in posts:
         post_dict = post.to_dict()
+        post_dict['id'] = post.id
         post_dict['author'] = User(**post_dict['author'])
         post_list.append(Post(**post_dict))
     return post_list

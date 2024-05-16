@@ -59,6 +59,7 @@ class Post:
 
                     st.image(resized_image, use_column_width=True)
                     st.write(f"Title: {post.title}")
+                    st.write(f"{post.id}")
                     st.write(f"Author: {post.author.name}")
                     col1, col2, col3 = st.columns(3)
                     with col1:
@@ -82,10 +83,21 @@ class Post:
 
     @st.experimental_dialog("Detail post", width="large")
     def detail_post(post):
+        auth_instance = get_logged_in_user_email()
         st.write(f"detail {post.title}")
         for file in post.files:
             df = pd.read_csv(file)
             st.dataframe(df)
+
+        new_comment = st.text_input('Write a comment')
+
+        if st.button('Submit Comment'):
+            create_comment(new_comment, auth_instance.LoginUser(), datetime.now(), post)
+
+        comments = list_comment(post.id)
+
+        for comment in comments:
+            st.write(f"{comment.content}")
 
     @st.experimental_dialog("Create post", width="large")
     def create_post():
@@ -107,4 +119,3 @@ class Post:
                     image,
                 )
                 st.rerun()
-                
