@@ -10,6 +10,7 @@ class User:
 
 @dataclass
 class Post:
+    id: str
     title: str
     content: str
     author: User
