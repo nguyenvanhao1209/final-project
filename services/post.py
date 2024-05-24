@@ -38,7 +38,7 @@ def create_post(title, content, author, datetime, files, image):
         image_url = image_blob.public_url
     
     # Create a new Post instance
-    post = Post(title=title, content=content, author=author, datetime=datetime, files=file_urls, image=image_url)
+    post = Post(id=title, title=title, content=content, author=author, datetime=datetime, files=file_urls, image=image_url)
 
     # Convert the Post instance to a dictionary
     post_dict = post.__dict__
