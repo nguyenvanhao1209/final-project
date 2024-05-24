@@ -59,7 +59,6 @@ class Post:
 
                     st.image(resized_image, use_column_width=True)
                     st.write(f"Title: {post.title}")
-                    st.write(f"{post.id}")
                     st.write(f"Author: {post.author.name}")
                     col1, col2, col3 = st.columns(3)
                     with col1:
