@@ -14,6 +14,24 @@ import pandas as pd
 from services.google_login import get_logged_in_user_email
 import time
 
+def download_files_as_zip(post):
+    # Create a BytesIO object to store the zip file in memory
+    zip_buffer = io.BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for file in post.files:
+            file_response = requests.get(file)
+            file_name = get_file(file)
+            zip_file.writestr(file_name, file_response.content)
+
+    zip_buffer.seek(0)
+
+    st.download_button(
+        label="Download All Files",
+        data=zip_buffer,
+        file_name=f"{post.title}.zip",
+        mime="application/zip"
+    )
 class Post:
     def all_post():
         auth_instance = get_logged_in_user_email()
@@ -93,6 +111,7 @@ class Post:
 
     @st.experimental_dialog("Detail post", width="large")
     def detail_post(post):
+        download_files_as_zip(post)
         auth_instance = get_logged_in_user_email()
         st.write(f"detail {post.title}")
         for file in post.files:
