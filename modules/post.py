@@ -2,7 +2,7 @@ import streamlit as st
 from services.comment import create_comment, list_comment
 from datetime import datetime
 from local_components import card_container
-from services.post import list_post, create_post
+from services.post import list_post, create_post, update_post, delete_post
 import requests
 from io import BytesIO
 from utils import time_difference, format_file_size, get_file_extension
@@ -14,8 +14,27 @@ import pandas as pd
 from services.google_login import get_logged_in_user_email
 import time
 
+def download_files_as_zip(post):
+    # Create a BytesIO object to store the zip file in memory
+    zip_buffer = io.BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for file in post.files:
+            file_response = requests.get(file)
+            file_name = get_file(file)
+            zip_file.writestr(file_name, file_response.content)
+
+    zip_buffer.seek(0)
+
+    st.download_button(
+        label="Download All Files",
+        data=zip_buffer,
+        file_name=f"{post.title}.zip",
+        mime="application/zip"
+    )
 class Post:
     def all_post():
+        auth_instance = get_logged_in_user_email()
         st.write(" # Tập dữ liệu # ")
         col1, col2 = st.columns([5, 1])
         with col1:
@@ -71,21 +90,41 @@ class Post:
                         st.write(f"{format_file_size(file_sizes)}")
 
                     with col3:
-                        st.write(f"Type: {file_extensions}")
+                        st.write(f"{file_extensions}")
 
                     st.write(
                         f"Time: {time_difference(post.datetime.strftime('%Y-%m-%d %H:%M:%S'))}"
                     )
-
-                    if st.button(f"Detail {post.title}", type="primary"):
-                        Post.detail_post(post)
+                    
+                    btncol1, btncol2, btncol3 = st.columns(3)
+                    with btncol1:
+                        if st.button(f"Detail", type="primary", key=f"Detail {post.title}"):
+                            Post.detail_post(post)
+                    with btncol2:
+                        if post.author.name == auth_instance.LoginUser().name:
+                            if st.button(f"Update", type="primary", key=f"Update {post.title}"):
+                                Post.update_post(post)
+                    with btncol3:
+                        if post.author.name == auth_instance.LoginUser().name:
+                            if st.button(f"Delete", type="primary", key=f"Delete {post.title}"):
+                                Post.delete_post(post)
 
     @st.experimental_dialog("Detail post", width="large")
     def detail_post(post):
+        download_files_as_zip(post)
         auth_instance = get_logged_in_user_email()
         st.write(f"detail {post.title}")
         for file in post.files:
-            df = pd.read_csv(file)
+            if get_file_extension(file) == "csv":
+                df = pd.read_csv(file)
+            elif get_file_extension(file) == "xlsx":
+                df = pd.read_excel(file)
+            elif get_file_extension(file) == "json":
+                df = pd.read_json(file)
+            elif get_file_extension(file) == "sql":
+                df = pd.read_sql(file)
+            else:
+                df = None
             st.dataframe(df)
 
         new_comment = st.text_input('Write a comment')
@@ -103,7 +142,7 @@ class Post:
         st.write("Share your own dataset")
         auth_instance = get_logged_in_user_email()
         with st.form("upload_form"):
-            title = st.text_input("Title", max_chars=10)
+            title = st.text_input("Title", max_chars=100)
             content = st.text_area("Content")
             files = st.file_uploader("Upload files", accept_multiple_files=True)
             image = st.file_uploader("Upload a image")
@@ -118,3 +157,33 @@ class Post:
                     image,
                 )
                 st.rerun()
+
+    @st.experimental_dialog("Update post", width="large")
+    def update_post(post):
+        st.write("Update your dataset")
+        auth_instance = get_logged_in_user_email()
+        with st.form("update_form"):
+            title = st.text_input("Title", max_chars=100, value=f"{post.title}")
+            content = st.text_area("Content", value=f"{post.content}")
+            files = st.file_uploader("Upload files", accept_multiple_files=True)
+            image = st.file_uploader("Upload a image")
+            submitted = st.form_submit_button("Submit", type="primary")
+            if submitted:
+                if files == []:
+                    files = post.files
+                if image is None:
+                    image = post.image
+                update_post(
+                    post.id,
+                    title,
+                    content,
+                    auth_instance.LoginUser(),
+                    datetime.now(),
+                    files,
+                    image,
+                )
+                st.rerun()
+
+    def delete_post(post):
+        delete_post(post_id=post.id)
+        st.rerun()
