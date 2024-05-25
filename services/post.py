@@ -41,6 +41,7 @@ def create_post(title, content, author, datetime, files, image):
     
     post_id = str(uuid.uuid4())
     # Create a new Post instance
+    
     post = Post(id=post_id, title=title, content=content, author=author, datetime=datetime, files=file_urls, image=image_url)
 
     # Convert the Post instance to a dictionary
