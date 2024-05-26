@@ -21,12 +21,14 @@ def create_comment(content, user, datetime, post):
     db.collection('comments').add(comment_dict)  # Add the comment to the 'comments' collection in Firestore
 
 def list_comment(post_id):
-    comments = db.collection('comments').where('post.id', '==', post_id).stream()
+    comments = db.collection('comments').where(field_path='post.id', op_string='==', value=post_id).stream()
     comment_list = []
     for comment in comments:
         comment_dict = comment.to_dict()
         comment_dict['user'] = User(**comment_dict['user'])
         comment_dict['post'] = Post(**comment_dict['post'])
         comment_list.append(Comment(**comment_dict))
+
+    comment_list = sorted(comment_list, key=lambda comment: comment.datetime, reverse=True)
     return comment_list
 

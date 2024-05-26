@@ -86,7 +86,7 @@ def format_file_size(size):
     size = int(size)
     suffixes = ['B', 'kB', 'MB', 'GB', 'TB']  # List of size suffixes
     suffix_index = 0
-    while size > 1024 and suffix_index < len(suffixes) - 1:
+    while size >= 1024 and suffix_index < len(suffixes) - 1:
         size /= 1024
         suffix_index += 1
     return f"{size:.2f}{suffixes[suffix_index]}"
@@ -105,4 +105,14 @@ def get_file(url):
     file_name = url.split("/")[-1]
 
     return file_name
+
+def calculate_file_size(number, size_type):
+    size_types = ['B', 'kB', 'MB', 'GB', 'TB']
+    if size_type not in size_types:
+        raise ValueError(f"Invalid size type. Expected one of: {size_types}")
+
+    size_index = size_types.index(size_type)
+    size_in_bits = number * (1024 ** size_index)
+
+    return size_in_bits
 
