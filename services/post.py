@@ -4,6 +4,8 @@ import os
 from firebase_admin import firestore, credentials, initialize_app, storage
 from model import Post, User
 import uuid
+from utils import get_file_extension
+import requests
 
 cred = credentials.Certificate("streamlit-ml-f44ba64799b5.json")
 
@@ -41,7 +43,7 @@ def create_post(title, content, author, datetime, files, image):
     
     post_id = str(uuid.uuid4())
     # Create a new Post instance
-    
+
     post = Post(id=post_id, title=title, content=content, author=author, datetime=datetime, files=file_urls, image=image_url)
 
     # Convert the Post instance to a dictionary
@@ -89,3 +91,33 @@ def update_post(post_id, title, content, author, datetime, files, image):
 def delete_post(post_id):
     db = firestore.client()
     db.collection('posts').document(post_id).delete()
+
+def search_post_by_title(title):
+    posts = list_post()
+    result = []
+    for post in posts:
+        if title.lower() in post.title.lower():
+            result.append(post)
+    return result
+
+def search_post_by_file_type(posts, type_list):
+    result = []
+    for post in posts:
+        for file in post.files:
+            if get_file_extension(file) in type_list:
+                result.append(post)
+    return result
+
+def search_post_by_file_size(posts, min_size, max_size):
+    result = []
+    for post in posts:
+        file_sizes = 0
+        for file in post.files:
+            file_response = requests.head(file)
+            file_size = file_response.headers.get(
+                "Content-Length", "Unknown"
+            )
+            file_sizes += int(file_size)
+        if min_size <= file_sizes <= max_size:
+            result.append(post)
+    return result
