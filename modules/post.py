@@ -2,11 +2,11 @@ import streamlit as st
 from services.comment import create_comment, list_comment
 from datetime import datetime
 from local_components import card_container
+from services.post import list_post, create_post, update_post, delete_post, search_post_by_title, search_post_by_file_type, search_post_by_file_size
 from pygwalker.api.streamlit import StreamlitRenderer
-from services.post import list_post, create_post, update_post, delete_post
 import requests
 from io import BytesIO
-from utils import time_difference, format_file_size, get_file_extension
+from utils import time_difference, format_file_size, get_file_extension, calculate_file_size
 import zipfile
 import io
 from utils import get_file
@@ -14,7 +14,6 @@ from PIL import Image
 import pandas as pd
 from services.google_login import get_logged_in_user_email
 import time
-
 
 def download_files_as_zip(post):
     # Create a BytesIO object to store the zip file in memory
@@ -35,8 +34,6 @@ def download_files_as_zip(post):
         mime="application/zip",
         type="primary",
     )
-
-
 class Post:
     def all_post():
         auth_instance = get_logged_in_user_email()
@@ -48,8 +45,55 @@ class Post:
             if st.button("Upload your data", type="primary", key="upload_data"):
                 Post.create_post()
 
+        colf1, colf2 = st.columns([7,1])
+        with colf1:
+            search_text = st.text_input(label="search", placeholder="Search some thing...", label_visibility="hidden")
+        with colf2:
+            with st.popover("Filters", use_container_width=False):
+                st.write("File types")
+                filter_col = ['csv', 'json', 'sql', 'xlsx']
+                selected_file_types = st.multiselect("File types", filter_col, label_visibility="collapsed")
+                st.write("File size")
+                colnb1, cols1, colnb2, cols2 = st.columns(4)
+                with colnb1:
+                    min_size = st.number_input("Min", placeholder="Min", label_visibility="collapsed")
+                with cols1:
+                    size_type_min = st.selectbox("Min size type", ['kB', 'MB', 'GB'], label_visibility="collapsed")
+                with colnb2:
+                    max_size = st.number_input("Max", placeholder="Max", label_visibility="collapsed")
+                with cols2:
+                    size_type_max = st.selectbox("Max size type", ['kB', 'MB', 'GB'], label_visibility="collapsed")
+                selected_file_types_final = []
+                min_file_size = None
+                max_file_size = None
+                if calculate_file_size(min_size, size_type_min) > calculate_file_size(max_size, size_type_max):
+                    st.warning("Invalid file size range entered")
+                else:
+                    colvui, colap, colcl = st.columns([5,1,1])
+                    with colap:
+                        if st.button("Apply"):
+                            selected_file_types_final = selected_file_types
+                            min_file_size = calculate_file_size(min_size, size_type_min)
+                            max_file_size = calculate_file_size(max_size, size_type_max)
+                    with colcl:
+                        if st.button("Clear"):
+                            selected_file_types_final = []
+                            min_file_size = None
+                            max_file_size = None
+
         st.markdown("---")
-        posts = list_post()
+        if search_text == "":
+            posts = list_post()
+        else:
+            posts = search_post_by_title(search_text)
+
+        if selected_file_types_final:
+            posts = search_post_by_file_type(posts, selected_file_types_final)
+
+        if min_file_size is not None and max_file_size is not None:
+            posts = search_post_by_file_size(posts, min_file_size, max_file_size)
+
+
         # Create a list to hold the columns
         cols = [st.columns(3) for _ in range(len(posts) // 3 + (len(posts) % 3 > 0))]
 
