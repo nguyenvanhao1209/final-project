@@ -107,9 +107,9 @@ def main():
         get_current_login()
            
         st.sidebar.markdown("---")
-        st.markdown("#### Chọn chức năng ####")
-        selected = option_menu(None, ["Dữ liệu", "Thống kê", "Trực quan hóa", "Hồi quy", "Phân lớp", "Phân cụm", "Datasets"],
-                               icons=['clipboard-data', 'table', "bar-chart-fill", 'rulers', 'diamond-half', 'bi-exclude'],
+        st.markdown("#### Select options ####")
+        selected = option_menu(None, ["Infomation", "Statistic", "Visualization", "Regression", "Classification", "Clustering", "Datasets"],
+                               icons=['clipboard-data', 'table', "bar-chart-fill", 'rulers', 'diamond-half', 'bi-exclude','database'],
                                menu_icon="cast", default_index=0, styles={
                 "st": {"padding": "5!important", "background-color": "#fafafa"},
                 "icon": {"color": "black", "font-size": "15px"},
@@ -121,22 +121,22 @@ def main():
         
         with st.sidebar:
             st.sidebar.markdown("---")
-            st.markdown("#### Tải lên dữ liệu ####")
+            st.markdown("#### Upload your data ####")
             file = st.file_uploader("", type=["csv", "xlsx", "xls"])
 
         if file is not None:
 
             data = load_data(file)
 
-            if selected == 'Dữ liệu':
+            if selected == 'Infomation':
                 
                 Info.info(data)
 
-            if selected == 'Thống kê':
+            if selected == 'Statistic':
                 
                 analyze_data(data)
 
-            if selected == 'Trực quan hóa':
+            if selected == 'Visualization':
                 
                 st.write(" # Trực quan hóa dữ liệu # ")
                 st.write("#### Dữ liệu ####")
@@ -146,7 +146,7 @@ def main():
                 create_chart(edit_data)
                 st.markdown("---")
 
-            if selected == 'Hồi quy':
+            if selected == 'Regression':
                 
 
                 st.write(" # Hồi quy tuyến tính # ")
@@ -163,7 +163,7 @@ def main():
                 if regression_type == "Lasso":
                     Regression.lasso_regression(data)
 
-            if selected == 'Phân lớp':
+            if selected == 'Classification':
                 
                 st.write(" # Phân lớp # ")
                 st.write("#### Dữ liệu ####")
@@ -183,7 +183,7 @@ def main():
                 if class_type == 'SVM':
                     Classification.svm_classification(edit_data)
 
-            if selected == 'Phân cụm':
+            if selected == 'Clustering':
                 
                 st.write(" # Phân cụm # ")
                 st.write("#### Dữ liệu ####")
@@ -201,9 +201,7 @@ def main():
         
         else:
             if selected == 'Datasets':
-                Post.all_post()
-
-
+                Post.all_post()                
             else:    
                 st.balloons()
                 container = st.container()

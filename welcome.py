@@ -49,12 +49,12 @@ with col1:
                         """,
                         unsafe_allow_html=True
                     )
-    st.title("Level up with the largest AI & ML community")
+    st.title("Level up with our AI & ML community")
     st.markdown(
                         """
                         <style>
                         .b {
-                            margin-top: 30px ;
+                            margin-top: 20px ;
                             }
                         </style>
 
