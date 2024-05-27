@@ -3,6 +3,7 @@ from services.comment import create_comment, list_comment
 from datetime import datetime
 from local_components import card_container
 from services.post import list_post, create_post, update_post, delete_post, search_post_by_title, search_post_by_file_type, search_post_by_file_size
+from pygwalker.api.streamlit import StreamlitRenderer
 import requests
 from io import BytesIO
 from utils import time_difference, format_file_size, get_file_extension, calculate_file_size
@@ -13,12 +14,13 @@ from PIL import Image
 import pandas as pd
 from services.google_login import get_logged_in_user_email
 from services.vote import create_vote, count_vote
+import time
 
 def download_files_as_zip(post):
     # Create a BytesIO object to store the zip file in memory
     zip_buffer = io.BytesIO()
 
-    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
         for file in post.files:
             file_response = requests.get(file)
             file_name = get_file(file)
@@ -33,6 +35,9 @@ def download_files_as_zip(post):
         mime="application/zip"
     )
 
+        mime="application/zip",
+        type="primary",
+    )
 class Post:
     def all_post():
         auth_instance = get_logged_in_user_email()
@@ -118,15 +123,12 @@ class Post:
                     for file in post.files:
                         # Get the file size from the 'Content-Length' header
                         file_response = requests.head(file)
-                        file_size = file_response.headers.get(
-                            "Content-Length", "Unknown"
-                        )
+                        file_size = file_response.headers.get("Content-Length", "Unknown")
                         file_sizes += int(file_size)
                         file_extensions.add(get_file_extension(file))
 
                     st.image(resized_image, use_column_width=True)
-                    st.write(f"Title: {post.title}")
-                    st.write(f"Author: {post.author.name}")
+                    st.write(f"###### {post.title} - <u> {post.author.name} </u>", unsafe_allow_html=True)
                     col1, col2, col3 = st.columns(3)
                     with col1:
                         if len(post.files) == 1:
@@ -140,44 +142,59 @@ class Post:
                     with col3:
                         st.write(f"{file_extensions}")
 
-                    st.write(
-                        f"Time: {time_difference(post.datetime.strftime('%Y-%m-%d %H:%M:%S'))}"
-                    )
-                    
+                    st.write(f"Time: {time_difference(post.datetime.strftime('%Y-%m-%d %H:%M:%S'))}")
+
                     btncol1, btncol2, btncol3 = st.columns(3)
                     with btncol1:
-                        if st.button(f"Detail", type="primary", key=f"Detail {post.title}"):
+                        if st.button(f"Detail", type="primary", key=f"Detail {post.title}", use_container_width=True):
                             Post.detail_post(post)
                     with btncol2:
                         if post.author.name == auth_instance.LoginUser().name:
-                            if st.button(f"Update", type="primary", key=f"Update {post.title}"):
+                            if st.button(
+                                f"Update", type="primary", key=f"Update {post.title}", use_container_width=True
+                            ):
                                 Post.update_post(post)
                     with btncol3:
                         if post.author.name == auth_instance.LoginUser().name:
-                            if st.button(f"Delete", type="primary", key=f"Delete {post.title}"):
+                            if st.button(
+                                f"Delete", type="primary", key=f"Delete {post.title}", use_container_width=True
+                            ):
                                 Post.delete_post(post)
 
     @st.experimental_dialog("Detail post", width="large")
     def detail_post(post):
-        download_files_as_zip(post)
+        col1d, col2d = st.columns([3, 1])
+        with col1d:
+            st.write(f"### Detail {post.title}")
+        with col2d:
+            download_files_as_zip(post)
+
+        with card_container(key="content"):
+            st.write("#### About dataset")
+            st.write(f"{post.content}")
         auth_instance = get_logged_in_user_email()
-        st.write(f"detail {post.title}")
-        for file in post.files:
-            if get_file_extension(file) == "csv":
-                df = pd.read_csv(file)
-            elif get_file_extension(file) == "xlsx":
-                df = pd.read_excel(file)
-            elif get_file_extension(file) == "json":
-                df = pd.read_json(file)
-            elif get_file_extension(file) == "sql":
-                df = pd.read_sql(file)
+        tab = {}
+        for i in range(len(post.files)):
+            tab[i] = i
+        tab = st.tabs([f"File {i+1}" for i in range(len(post.files))])
+        for i in range(len(post.files)):
+            if get_file_extension(post.files[i]) == "csv":
+                df = pd.read_csv(post.files[i])
+            elif get_file_extension(post.files[i]) == "xlsx":
+                df = pd.read_excel(post.files[i])
+            elif get_file_extension(post.files[i]) == "json":
+                df = pd.read_json(post.files[i])
+            elif get_file_extension(post.files[i]) == "sql":
+                df = pd.read_sql(post.files[i])
             else:
                 df = None
-            st.dataframe(df)
+            with tab[i]:
+                pyg_app = StreamlitRenderer(df)
+                pyg_app.explorer(default_tab="data", height=500)
 
-        new_comment = st.text_input('Write a comment')
+        new_comment = st.text_input("Write a comment")
 
-        if st.button('Submit Comment'):
+        if st.button("Submit Comment"):
             create_comment(new_comment, auth_instance.LoginUser(), datetime.now(), post)
 
         comments = list_comment(post.id)
