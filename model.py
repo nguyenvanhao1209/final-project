@@ -17,9 +17,11 @@ class Post:
     datetime: datetime.datetime
     files: List[str]
     image: str = None
+    downloaded: int = 0
 
 @dataclass
 class Comment:
+    id: str
     content: str
     user: User
     datetime: datetime.datetime
@@ -27,6 +29,7 @@ class Comment:
 
 @dataclass
 class Vote:
+    id: str
     user: User
     post: Post
     value: int

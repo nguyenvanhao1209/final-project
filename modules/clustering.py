@@ -7,6 +7,30 @@ from sklearn.cluster import KMeans, DBSCAN, OPTICS
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import plotly.graph_objects as go
 
+def get_result(model, X, X_scaled, feature_columns, n_clusters):
+    # Add cluster labels to the data
+    X["cluster"] = model.labels_
+    X["cluster"] = X["cluster"].astype(str)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("##### Clustering Visualize #####")
+        if len(feature_columns) <= 2:
+            fig = px.scatter(X, x=X.iloc[:, 0], y=X.iloc[:, 1], color="cluster")
+            st.markdown("Number of Clusters: {}".format(n_clusters))
+            st.plotly_chart(fig, use_container_width=True)
+            cluster_labels = X["cluster"]
+            cluster_counts = cluster_labels.value_counts()
+            st.write(cluster_counts)
+        else:
+            pass
+
+    with col2:
+
+        st.markdown("##### Clustering Result Visualize #####")
+        silhouette_avg = silhouette_score(X_scaled, model.labels_)
+        st.markdown(f"Silhouette Score: {silhouette_avg:.4f}")
+        st.dataframe(X, use_container_width=True)
 
 class Clustering:
     def kmeans_clustering(data):
@@ -45,29 +69,7 @@ class Clustering:
             kmeans = KMeans(n_clusters=n_clusters, random_state=42)
             kmeans.fit(X_scaled)
 
-            # Add cluster labels to the data
-            X["cluster"] = kmeans.labels_
-            X["cluster"] = X["cluster"].astype(str)
-
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown("##### Clustering Visualize #####")
-                if len(feature_columns) <= 2:
-                    fig = px.scatter(X, x=X.iloc[:, 0], y=X.iloc[:, 1], color="cluster")
-                    st.markdown("Number of Clusters: {}".format(n_clusters))
-                    st.plotly_chart(fig, use_container_width=True)
-                    cluster_labels = X["cluster"]
-                    cluster_counts = cluster_labels.value_counts()
-                    st.write(cluster_counts)
-                else:
-                    pass
-
-            with col2:
-
-                st.markdown("##### Clustering Result Visualize #####")
-                silhouette_avg = silhouette_score(X_scaled, kmeans.labels_)
-                st.markdown(f"Silhouette Score: {silhouette_avg:.4f}")
-                st.dataframe(X, use_container_width=True)
+            get_result(kmeans, X, X_scaled, feature_columns, n_clusters)
 
     def dbscan_clustering(data):
 

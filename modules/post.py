@@ -2,7 +2,7 @@ import streamlit as st
 from services.comment import create_comment, list_comment
 from datetime import datetime
 from local_components import card_container
-from services.post import list_post, create_post, update_post, delete_post, search_post_by_title, search_post_by_file_type, search_post_by_file_size
+from services.post import list_post, create_post, update_post, delete_post, search_post_by_title, search_post_by_file_type, search_post_by_file_size, update_downloaded
 from pygwalker.api.streamlit import StreamlitRenderer
 import requests
 from io import BytesIO
@@ -13,9 +13,15 @@ from utils import get_file
 from PIL import Image
 import pandas as pd
 from services.google_login import get_logged_in_user_email
+from services.vote import create_vote, count_vote, is_voted, delete_vote
 import time
 
+@st.experimental_fragment
 def download_files_as_zip(post):
+    # Initialize the flag in the session state
+    if f'has_updated_{post.id}' not in st.session_state:
+        st.session_state[f'has_updated_{post.id}'] = False
+
     # Create a BytesIO object to store the zip file in memory
     zip_buffer = io.BytesIO()
 
@@ -27,13 +33,28 @@ def download_files_as_zip(post):
 
     zip_buffer.seek(0)
 
-    st.download_button(
-        label="Download All Files",
+    if st.download_button(
+        label=f"Download ({post.downloaded})",
         data=zip_buffer,
         file_name=f"{post.title}.zip",
         mime="application/zip",
         type="primary",
-    )
+    ):
+        if not st.session_state[f'has_updated_{post.id}']:
+            # Update the flag in the session state
+            st.session_state[f'has_updated_{post.id}'] = True
+            update_downloaded(post.id)
+
+def change_vote(vote, auth_instance, post):
+    if vote == True:
+        delete_vote(auth_instance.LoginUser().id, post.id)
+    else:
+        create_vote(auth_instance.LoginUser(), post, 1)
+
+@st.experimental_fragment
+def handle_vote(auth_instance, post):
+    vote = st.toggle(f"{count_vote(post.id)} votes", value=is_voted(auth_instance.LoginUser().id, post.id), key=f"vote {auth_instance.LoginUser().id}, {post.id}", on_change=change_vote(is_voted(auth_instance.LoginUser().id, post.id), auth_instance, post))
+
 class Post:
     def all_post():
         auth_instance = get_logged_in_user_email()
@@ -47,7 +68,7 @@ class Post:
 
         colf1, colf2 = st.columns([7,1])
         with colf1:
-            search_text = st.text_input(label="search", placeholder="Search some thing...", label_visibility="hidden")
+            search_text = st.text_input(label="search", placeholder="Search some thing...", label_visibility="collapsed")
         with colf2:
             with st.popover("Filters", use_container_width=False):
                 st.write("File types")
@@ -138,7 +159,13 @@ class Post:
                     with col3:
                         st.write(f"{file_extensions}")
 
-                    st.write(f"Time: {time_difference(post.datetime.strftime('%Y-%m-%d %H:%M:%S'))}")
+                    col1, col2 = st.columns([1,1])
+                    with col1:
+                        st.write(f"{count_vote(post.id)} votes")
+                    with col2:
+                        st.write(f"{post.downloaded} downloaded")
+
+                    st.write(f"Updated {time_difference(post.datetime.strftime('%Y-%m-%d %H:%M:%S'))}")
 
                     btncol1, btncol2, btncol3 = st.columns(3)
                     with btncol1:
@@ -159,10 +186,14 @@ class Post:
 
     @st.experimental_dialog("Detail post", width="large")
     def detail_post(post):
-        col1d, col2d = st.columns([3, 1])
+        auth_instance = get_logged_in_user_email()
+        col1d, col2d, col3d = st.columns([2, 1, 1])
         with col1d:
             st.write(f"### Detail {post.title}")
         with col2d:
+            handle_vote(auth_instance, post)
+
+        with col3d:
             download_files_as_zip(post)
 
         with card_container(key="content"):
@@ -186,7 +217,7 @@ class Post:
                 df = None
             with tab[i]:
                 pyg_app = StreamlitRenderer(df)
-                pyg_app.explorer(default_tab="data", height=500)
+                pyg_app.explorer(default_tab="data", height=730)
 
         new_comment = st.text_input("Write a comment")
 
