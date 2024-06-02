@@ -19,7 +19,7 @@ with open( "style.css" ) as css:
     st.markdown( f'<style>{css.read()}</style>' , unsafe_allow_html= True)
 
 st.markdown(f"""
-    <header class="navbar st-emotion-cache-18ni7ap ezrtsby2">
+    <header class="navbar st-emotion-cache-12fmjuu ezrtsby2">
         <a class="navbar-brand" href="#" id="nav-a">
             <img src="data:image/png;base64,{encoded_logo}" alt="logo" />
             <span>YOUR SAAS</span>

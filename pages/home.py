@@ -129,15 +129,12 @@ def main():
             data = load_data(file)
 
             if selected == 'Infomation':
-                
                 Info.info(data)
 
             if selected == 'Statistic':
-                
                 analyze_data(data)
 
             if selected == 'Visualization':
-                
                 st.write(" # Trực quan hóa dữ liệu # ")
                 st.write("#### Dữ liệu ####")
                 st.write("Data")
@@ -147,44 +144,12 @@ def main():
                 st.markdown("---")
 
             if selected == 'Regression':
-                
-
-                st.write(" # Hồi quy tuyến tính # ")
-                st.write("#### Dữ liệu ####")
-                st.write("Data")
-                with st.expander("See data", expanded=True):
-                    edit_data = st.data_editor(data, use_container_width=True, num_rows="dynamic")
-                st.markdown("---")
-                regression_type = st.selectbox("", ["OLS Linear Regression", 'Ridge', 'Lasso'])
-                if regression_type == "OLS Linear Regression":
-                    Regression.simple_linear_regresstion(data)
-                if regression_type == "Ridge":
-                    Regression.ridge_regression(data)
-                if regression_type == "Lasso":
-                    Regression.lasso_regression(data)
+                Regression.run(data)
 
             if selected == 'Classification':
-                
-                st.write(" # Phân lớp # ")
-                st.write("#### Dữ liệu ####")
-                st.write("Data")
-                with st.expander("See data", expanded=True):
-                    edit_data = st.data_editor(data, use_container_width=True, num_rows="dynamic")
-                st.markdown("---")
-                class_type = st.selectbox("", ["KNN", 'Logistic Regression', 'Random Forest', 'Naive Bayes', 'SVM'])
-                if class_type == 'KNN':
-                    Classification.knn_classification(edit_data)
-                if class_type == 'Logistic Regression':
-                    Classification.lgreg_classification(edit_data)
-                if class_type == 'Random Forest':
-                    Classification.randomfor_classification(edit_data)
-                if class_type == 'Naive Bayes':
-                    Classification.naivebayes_classification(edit_data)
-                if class_type == 'SVM':
-                    Classification.svm_classification(edit_data)
+                Classification.run(data)
 
             if selected == 'Clustering':
-                
                 st.write(" # Phân cụm # ")
                 st.write("#### Dữ liệu ####")
                 st.write("Data")
@@ -201,8 +166,8 @@ def main():
         
         else:
             if selected == 'Datasets':
-                Post.all_post()                
-            else:    
+                Post.all_post()
+            else:
                 st.balloons()
                 container = st.container()
                 with container:

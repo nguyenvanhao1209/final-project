@@ -4,6 +4,7 @@ from dataclasses import asdict
 from model import Comment
 import streamlit as st
 from model import User, Post
+import uuid
 
 # Initialize Firebase
 if not firebase_admin._apps:
@@ -13,7 +14,8 @@ if not firebase_admin._apps:
 db = firestore.client()
 
 def create_comment(content, user, datetime, post):
-    comment = Comment(content=content, user=user, datetime=datetime, post=post)
+    id = str(uuid.uuid4())
+    comment = Comment(id=id,content=content, user=user, datetime=datetime, post=post)
     comment_dict = asdict(comment)  # Convert the Comment object to a dictionary
     comment_dict['user'] = asdict(comment.user)  # Convert the User object to a dictionary
     comment_dict['post'] = asdict(comment.post)  # Convert the Post object to a dictionary

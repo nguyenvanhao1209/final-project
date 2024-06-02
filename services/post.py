@@ -44,7 +44,7 @@ def create_post(title, content, author, datetime, files, image):
     post_id = str(uuid.uuid4())
     # Create a new Post instance
 
-    post = Post(id=post_id, title=title, content=content, author=author, datetime=datetime, files=file_urls, image=image_url)
+    post = Post(id=post_id, title=title, content=content, author=author, datetime=datetime, files=file_urls, image=image_url, downloaded=0)
 
     # Convert the Post instance to a dictionary
     post_dict = post.__dict__
@@ -121,3 +121,11 @@ def search_post_by_file_size(posts, min_size, max_size):
         if min_size <= file_sizes <= max_size:
             result.append(post)
     return result
+
+def update_downloaded(post_id):
+    db = firestore.client()
+    post_ref = db.collection('posts').document(post_id)
+    post = post_ref.get()
+    post_dict = post.to_dict()
+    post_dict['downloaded'] += 1
+    post_ref.update(post_dict)
