@@ -131,8 +131,37 @@ class Regression:
         if X is not None and y is not None:
             X_train, X_test, y_train, y_test = train_test(X, y)
 
+            with st.popover("Choose parameter", use_container_width=True):
+                text_fit_intercept = """
+                ### fit_intercept: bool, default=True
+                Whether to calculate the intercept for this model. If set to False, no intercept will be used in calculations (i.e. data is expected to be centered).
+                """
+                fit_intercept = st.selectbox("Choose fit_intercept", (True, False), index=0, help=text_fit_intercept)
+                text_copy_X = """
+                ### copy_X: bool, default=True
+                If True, X will be copied; else, it may be overwritten.
+                """
+                copy_X = st.selectbox("Choose copy_X", (True, False), index=0, help=text_copy_X)
+                text_n_jobs = """
+                ### n_jobs: int, default=None
+                The number of jobs to use for the computation. This will only provide speedup in case of sufficiently large problems, that is if firstly n_targets > 1 and secondly X is sparse or if positive is set to True. None means 1 unless in a joblib.parallel_backend context. -1 means using all processors.
+                """
+                n_jobs = st.number_input("Choose n_jobs", value=None, help=text_n_jobs)
+                text_positive = """
+                ### positive: bool, default=False
+                When set to True, forces the coefficients to be positive. This option is only supported for dense arrays.
+                """
+                positive = st.selectbox("Choose positive", (True, False), index=1, help=text_positive)
+
             # Create and train the linear regression model
+            params = {
+                "fit_intercept": fit_intercept,
+                "copy_X": copy_X,
+                "n_jobs": n_jobs,
+                "positive": positive
+            }
             model = LinearRegression()
+            model.set_params(**params)
             model.fit(X_train, y_train)
 
             get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, target_column)
@@ -143,9 +172,73 @@ class Regression:
         if X is not None and y is not None:
             X_train, X_test, y_train, y_test = train_test(X, y)
 
-            alpha = st.number_input(label="Chọn alpha")
-            # Create and train the linear regression model
-            model = Ridge(alpha=alpha)
+            with st.popover("Choose parameter", use_container_width=True):
+                text_alpha = """
+                ### alpha: float, default=1.0
+                Regularization strength; must be a positive float. Regularization improves the conditioning of the problem and reduces the variance of the estimates. Larger values specify stronger regularization.
+                """
+                alpha = st.number_input("Choose alpha", value=1.0, help=text_alpha)
+                text_fit_intercept = """
+                ### fit_intercept: bool, default=True
+                Whether to calculate the intercept for this model. If set to False, no intercept will be used in calculations (i.e. data is expected to be centered).
+                """
+                fit_intercept = st.selectbox("Choose fit_intercept", (True, False), index=0, help=text_fit_intercept)
+                text_copy_X = """
+                ### copy_X: bool, default=True
+                If True, X will be copied; else, it may be overwritten.
+                """
+                copy_X = st.selectbox("Choose copy_X", (True, False), index=0, help=text_copy_X)
+                text_max_iter = """
+                ### max_iter: int, default=None
+                Maximum number of iterations for conjugate gradient solver. For 'sparse_cg' and 'lsqr' solvers, the default value is determined by scipy.sparse.linalg. For 'sag' solver, the default value is 1000.
+                """
+                max_iter = st.number_input("Choose max_iter", value=None, help=text_max_iter)
+                text_tol = """
+                ### tol: float, default=1e-4
+                The precision of the solution (coef_) is determined by tol which specifies a different convergence criterion for each solver:
+                - ‘svd’: tol has no impact.
+                - ‘cholesky’: tol has no impact.
+                - ‘sparse_cg’: norm of residuals smaller than tol.
+                - ‘lsqr’: tol is set as atol and btol of scipy.sparse.linalg.lsqr, which control the norm of the residual vector in terms of the norms of matrix and coefficients.
+                - ‘sag’ and ‘saga’: relative change of coef smaller than tol.
+                - ‘lbfgs’: maximum of the absolute (projected) gradient=max|residuals| smaller than tol.
+                """
+                tol = float(st.text_input("Choose tolerance", value=0.0001, help=text_tol))
+                text_solver = """
+                ### solver: {‘auto’, ‘svd’, ‘cholesky’, ‘lsqr’, ‘sparse_cg’, ‘sag’, ‘saga’, ‘lbfgs’}, default=’auto’
+                Solver to use in the computational routines:
+                - ‘auto’ chooses the solver automatically based on the type of data.
+                - ‘svd’ uses a Singular Value Decomposition of X to compute the Ridge coefficients. More stable for singular matrices than ‘cholesky’.
+                - ‘cholesky’ uses the standard scipy.linalg.solve function to obtain a closed-form solution.
+                - ‘sparse_cg’ uses the conjugate gradient solver as found in scipy.sparse.linalg.cg. As an iterative algorithm, this solver is more appropriate than ‘cholesky’ for large-scale data (possibility to set tol and max_iter).
+                - ‘lsqr’ uses the dedicated regularized least-squares routine scipy.sparse.linalg.lsqr. It is the fastest and uses an iterative procedure.
+                - ‘sag’ uses a Stochastic Average Gradient descent, and ‘saga’ uses its improved, unbiased version named SAGA. Both methods also use an iterative procedure, and are often faster than other solvers when both n_samples and n_features are large. Note, however, that ‘sag’ and ‘saga’ fast convergence is only guaranteed on features with approximately the same scale. You can preprocess the data with a scaler from sklearn.preprocessing.
+                - ‘lbfgs’ uses L-BFGS-B optimization. It is quite efficient for small problems but not for large problems.
+                """
+                solver = st.selectbox("Choose solver", ('auto', 'svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga', 'lbfgs'), index=0, help=text_solver)
+                text_positive = """
+                ### positive: bool, default=False
+                When set to True, forces the coefficients to be positive. Only ‘lbfgs’ solver is supported in this case.
+                """
+                positive = st.selectbox("Choose positive", (True, False), index=1, help=text_positive)
+                text_random_state = """
+                ### random_state: int, RandomState instance or None, default=None
+                Used when solver == ‘sag’ or ‘saga’ to shuffle the data.
+                """
+                random_state = st.number_input("Choose random_state", value=None, help=text_random_state)
+
+            params = {
+                "alpha": alpha,
+                "fit_intercept": fit_intercept,
+                "copy_X": copy_X,
+                "max_iter": max_iter,
+                "tol": tol,
+                "solver": solver,
+                "random_state": random_state,
+                "positive": positive
+            }
+            model = Ridge()
+            model.set_params(**params)
             model.fit(X_train, y_train)
 
             get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, target_column)
@@ -156,9 +249,72 @@ class Regression:
         if X is not None and y is not None:
             X_train, X_test, y_train, y_test = train_test(X, y)
 
-            alpha = st.number_input(label="Chọn alpha")
-            # Create and train the linear regression model
-            model = Lasso(alpha=alpha)
+            with st.popover("Choose parameter", use_container_width=True):
+                text_alpha = """
+                ### alpha: float, default=1.0
+                Constant that multiplies the L1 term, controlling regularization strength. alpha must be a non-negative float i.e. in [0, inf).
+                """
+                alpha = st.number_input("Choose alpha", value=1.0, help=text_alpha)
+                text_fit_intercept = """
+                ### fit_intercept: bool, default=True
+                Whether to calculate the intercept for this model. If set to False, no intercept will be used in calculations (i.e. data is expected to be centered).
+                """
+                fit_intercept = st.selectbox("Choose fit_intercept", (True, False), index=0, help=text_fit_intercept)
+                text_precompute = """
+                ### precompute: bool or array-like of shape (n_features, n_features), default=False
+                Whether to use a precomputed Gram matrix to speed up calculations. The Gram matrix can also be passed as argument. For sparse input this option is always True to preserve sparsity.
+                """
+                precompute = st.selectbox("Choose precompute", (True, False), index=1, help=text_precompute)
+                text_copy_X = """
+                ### copy_X: bool, default=True
+                If True, X will be copied; else, it may be overwritten.
+                """
+                copy_X = st.selectbox("Choose copy_X", (True, False), index=0, help=text_copy_X)
+                text_max_iter = """
+                ### max_iter: int, default=1000
+                The maximum number of iterations.
+                """
+                max_iter = st.number_input("Choose max_iter", value=1000, help=text_max_iter)
+                text_tol = """
+                ### tol: float, default=1e-4
+                The tolerance for the optimization: if the updates are smaller than tol, the optimization code checks the dual gap for optimality and continues until it is smaller than tol.
+                """
+                tol = float(st.text_input("Choose tolerance", value=0.0001, help=text_tol))
+                text_warm_start = """
+                ### warm_start: bool, default=False
+                When set to True, reuse the solution of the previous call to fit as initialization, otherwise, just erase the previous solution.
+                """
+                warm_start = st.selectbox("Choose warm_start", (True, False), index=0, help=text_warm_start)
+                text_positive = """
+                ### positive: bool, default=False
+                When set to True, forces the coefficients to be positive. This option is only supported for dense arrays.
+                """
+                positive = st.selectbox("Choose positive", (True, False), index=1, help=text_positive)
+                text_random_state = """
+                ### random_state: int, RandomState instance or None, default=None
+                Used when selection == ‘random’ to shuffle the data. See Glossary for details.
+                """
+                random_state = st.number_input("Choose random_state", value=None, help=text_random_state)
+                text_selection = """
+                ### selection: {‘cyclic’, ‘random’}, default=’cyclic’
+                If set to ‘random’, a random coefficient is updated every iteration rather than looping over features sequentially by default. This (setting to ‘random’) often leads to significantly faster convergence especially when tol is higher than 1e-4.
+                """
+                selection = st.selectbox("Choose selection", ('cyclic', 'random'), index=0, help=text_selection)
+
+            params = {
+                "alpha": alpha,
+                "fit_intercept": fit_intercept,
+                "precompute": precompute,
+                "copy_X": copy_X,
+                "max_iter": max_iter,
+                "tol": tol,
+                "warm_start": warm_start,
+                "positive": positive,
+                "random_state": random_state,
+                "selection": selection
+            }
+            model = Lasso()
+            model.set_params(**params)
             model.fit(X_train, y_train)
 
             get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, target_column)
