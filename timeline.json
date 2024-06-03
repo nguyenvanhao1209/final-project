@@ -3,7 +3,7 @@
     "title": {
         "text": {
           "headline": "Welcome to<br>FaMI-LEARN",
-          "text": "<p>Ứng dụng học máy nhanh chóng chính xác</p> <div>Tìm hiểu ngay !!!</div>"
+          "text": "<p>Quick and accurate machine learning application</p> <div>Learn now !!!</div>"
         },
         "media": {
           "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAA51BMVEX///8CaatUxNABaaYAZ6sxcqT///0AXaEAY6n7/fsAaqsAZ6cAX5u7zdoAVpbO3ORikK/j7vAAYaNwmLr3/PkAZaAAZKV7or7H1t+VssqKrMg6eas9dqSatskAYqkAXaPV4+VWibEabZ8AWJt1nroAZJjc4+tHvsxSxNNBfalDtsZls8EAXJp2t8RQx9G3z9mmvs+Xw8+Eu8xGqb2pydJZrbsfYpPu8vOvwtVFfqSgxMyJv8ljkbZShLDf6ugAW6ZeuMO71Nfq6/GMtsdkuMZur8CvxM4wbp3F0t18n7SZs8oAUYsAXZD5d/gPAAAPqElEQVR4nO2dCVfiShbHiyyVhICYEMIiSECEEMImMmkV9NlPeerM9/88U0s2EJV0T48VTv7nvWMSEg6/vrXcqrq3AkCmTJkyZcqUKVOmTJkypUUQfvcv+NOCoDSdz+ePynf/kD8iCGHpajHgOM4eLKZHacz+lWNzvpz5d/+a/73g9YKLNHFqR2ZFCOYOIQsZl0m/IP6HQcE5roCTQWRHp5ToCwyjNKuK//pDP++3BcEjseDIqg0CwsH1Ic9hGVqtVT6T2ueyIP7hH/rr8paojZksPfCYiBAY/WKjc2ZKsiDk87kcu4RwbvtMpYjw8fNnjNKP6k1FxXC5QOwSeqT6LTwAlVFYD72P7lY8VCq7J21ZVrHhYmKX8Jb0g2NcrUoObU6dvX2+pxXrK9GVZFnYgWOccEkIaSc/XQ5sznauQ0D/wOsXqx1Rb58LOSGH6FJFaJHKN5jSM+96fnetRRaEwCvNykNV103hPVQ6CK9t2gG+L5eK99JaVS6Q4Uip3GO2dBA+k6rn3G9d9PrTxopHcF9QpYHQe6KEGj2FEJXK3prX2zKpcF9ajn3CPu0DCaFXeztt8qjKqcJXlS5FhH4v79yjeth5OP8VNMYJfU/N6aPjU+HwMpkGQkgmZq59J8ZCV8rybwAyR+i91DsW+jv3HVE8XKoeByE0tGmrU2nLesHCbndsMNFKNSHp0JFn2ejwFxJuUPI5ExGCO0poY6+t2E5zPfSsYnXNS3qssdT7ESE3RsclKaWERmlTHVZ0NJjb/kmSBcJ6yD0p6F+BV9NGqBjWrCeeoPFObk8/18aty9yffkJdPoRnaSO0mq50vmu5SFIRTyP64/pBDT3Q+52m5jsIUb3aN5ALpLcQYTg3M0eNUTGJp80EYfvTn3ReRfdYjk84Qv2/Jh0XoVBG92gB4cJAZ2e/4bcxSJgb4lWmYPaJTK+1zo+LsIJn1K58QvsW4if4z2pu2gjzbTwoDBpTboR6F8XdO8mUVkK+XQTRNPCEzJF20jU+/MqGZh3d5AVNDekR67/eIzJImBNW+K5wxekOr3N/8UjKCHOXqHGB42Dtl7qmCeaeGCD8qgN/wE3NbUBIxvmdX3ZrmLThOW5qpraPSOa9i2tRlwT1FwzJpA0F7LeFTQ03tvr3HlC0TbmgJ29TmSRURTwfFa6pcQPH+Wt096gB74coJXXgWCQU9FMIravQhtwEibNtZ3HtgZp4nsyOzBHm86ZYA4+jKIyG45bjvxzHxpTO3IOtSqJ2lT1CaWXcjx1MExKOofezNMfQE865hVYziRUZI8zz7Vc4dbjJYDnVngLCBQlpU7Q59gLskaesE4w1GCPM6XV4N5hwS+yq3QWhQsRxwzPhxi0qrNzCAjd7F7TTQCiXMaAzJ0abBsMLOwhog6A/HiBn3FLElNpQbSq3A87xl7atkHAEotDLuwGegeub6SR0a5bDOY9+zKwXVETbiS/hI8TJM2gc6saxRJjP3YBn274Nbxxz8YoYCIfXDKZG4cCunynChxfLQSUytFc4pWhfxR6H96gfeQLVA8spS4Q5F95tmSusiHgqI6arie1YX/p+DBLKa+Bwi1iNg+EoeDsmozTAE1Ru+kqpXPWcyTgeQBNVxK2QPRzyNgYHdhgsEQp1VCy3Yrk3oeN2tRXpiwif4PAw340lQrluOZO7+J3h3D73ZMQJl5jwLH2EQtlwJqOtBJKQMAgdIsJT/mNw4CQxS4Q5ES4mjre3ItrXscs1NLK69h749BE+eKgf2Ap0vg5HieNY5OXY5hxrc+DqPlOEcgtVvGXciFFFXEQXaw5edFsfxMcYYa5rIPPE2xrPCUZQZE6RXlvi3sPSU0motzTHduYxI47DdJLrIM9ghMb/z/DglQy2CHN6Hw3wB3fRWCmcFw4ct/tnjpssjNmhJmSNUBA9NEC0R1ZgxqgiOngxGEwXnM0t7kuFg6cxGCPMCU3j1kGO9fwnvfc+JMQhbiU0wufspWYVDo8/YY0wZ4re49JGjOMarnhwFFbE+fR5gE4Gz0bNPZiPQcK8XCl6ZDZ4sLi7trwg/IuzBySHxpkq9YsEgOwRIrV7mjWmpdNxollTksY296xhstVSFgmRGRued7vE096TKPmQc56nRr8sJVycYZEQSdfLNaA9Xo2Wsdl93E+WEwcPMUqYz8ntQnlmAOj9vdUjTo+FEEPmhYsZujvKr8RRGfeV4yHM4RlwEGTpBT0iHPLHRJjroruVcIGGwzOph04ipoRQ11CvfxdUxAkOiX5MGrLANqFMQhbCiojjFL2kS/lsE5oNdPvPyDXFDrl4VITCEGxVRDxZ00hYERkn5PEUW+iaktyEacIAMLYJadx+lI+Pl7u9i2ThJowTynV/rSmoiOjxhB0i44Q4TBEqT2F/MQUQJsxNYJwwx+O5i6hHxOuIs+MivMBJUNOQ8EmBoJ9oAPw9hGGm+dc6nyGv5j7aGOMeNTXJcoS+gxAqpU31TJf1jzODQiHnG8bihUkk5jpRn/99uWtKv1hdi2abbIrwsUF5PK8YpCbQXSSS5ZR+a/4hBIb10liJ7faHydp5Ei88DQlHqEecJerzvzvDEovsvCKetM/N/PuUL5yaALVwLgOPgkuJckpZIMQhaxAapVlZlM7bO5XTrGJbL8MQNwsALVFTwwRhJLxJ0Lqrt001iCHNkx8YzZpeA8VINLxgi5CucJP9PUSXdCk5wcU5M5FritfeEmXQsEUYk6G9vJ12L9pyG29DFybroaYGgt5REEKyaaJXm61myLJeFE2LPkmUoM8sYUwkgyYgxEEZxaMi9BcSw3hh2wKgdlSEVGFuN8c9IsKHBBkJKSGMrQUjz9SYtlaXrq4Lh2xbkxbCaHhx65dc7aW1EtX2J4n96SKMGtN4MIpyX2qVm5W2/Mn8G8OEyFJKGJGo7CUknyp467YzPOZU8aLVrs/KLiEsjpzF8zQ4He0jjN2tIMyma74vtMwSKs90070rP7YmJNy7mbBvaqO06Q15vMtgXggC3ZklnAf5lX/T85Edut6fCeItbzbVNd8O9htklfB+N7I0sKE9/fS5oN562qbRMS9QoVXZJIz18H6Id0AYRfB9/SWGVmysC90/9Bt/U8EeQ5w9IJuWhm3p4stHd3XP5Lb1cRuSTbyD4dPkLvHPZRJwK2KP7KwbDIETFFLWFWw4QLd/DkdPo6+eS498I05GpIw9+meDPTu2plQQzGm5HNwqQKn5wdD230cDCGieIUF8Go8Gk6Mro1jKdBHLWOdIZOkxmRDLmzuDCNC5ZfgtB78s7frJwTuA2M7yTvv69vRJwVn409v5/LrksfyeikyZMmXKlCnT14JxHWXHrhhbOipCCLxaY3VzFlfzs/u3jB3/QFEU/6oCgUGPFQb+rbRqF7+bSc1HyhU+ud/7p+nrn83WBz+iDwwAXv3D2gdf8//TprAntaDyyQPaherL7Gx90DGDDwrIWz+VySHZB/U7BRvtfRuvfUp4wvtS3djLraBxEVznCaFJbpG+mRC2pL3xzIcR8u40VhU30jZhhRx+N2E/SiTcCmY7kFA9jV3vqNuEPAOEEKyjgApBlwOZuvvJUzFC/j9RSrtX4LcJVQYIgRWEUOblyqreiumTh+KE+kt4udhmkTAMg5V6Wy/E+7QPixOavfAybVlYI/TjC3mcURHryslnykttS1bwUJyQFw3/qtdVGSTU6OYyeWG950PjRI8k6bpZ6dGJti1CKXgp6UusGjJDCGt+nK+0z+8w3qUryG4L23eLUK/6t5dNBglBsHMHv+9d1Ma7PRPy+XYdVdEtQv6MFtOtQsoOYcMP2OLr22rVUdkzCns8AakUEuaJ0fJun3xVjV5UGSMs+929IO/oYYbroSyfUwnIL6e3muuolBYIj04aKVClhdRljfCjAEoZE75Wq9VXX+Uudc/zuhYQVl4rmEGlA63LHAH0sdgnPJ/t9onGyiStEvrBPqE5G2K7qSe4hS25hFZsmWkh3OzeCi2ZvNNRfosIKY6EdyRokEOzMdPTQjgjVMF/+NgQaY1tBIT6jB6oOE2YtqRuqSUzSrivpUFezWzFu6FUPMwSzIiwBZsEQtJAiZhO7RpvbBLm+eqOethTKfFt4V26V2RD8w00CJg7A3VyYJYBozYk6eg7gsCiL5r7kFB/Q7eQow7wjVlkl/D9WALC4d7Epi1CRSQU3Rodzl/+TBMhqloUKS9gmcI5nc7ZIgSvtHMYEhg8L5Umwjrp4vmcWO5RVXZt2Aq6QZ5y6ht2Cc/2fUbdtLNg/AfomwK2CSF1ZagkDaaKcEWA6BuDiPYQwsAdDfvFNBFSG6pdy8ArGuh/cZcQu9wlNyQ0cR+aJkJaD3OCLp6JWGf8PkJ4GQ4LT/Be2GkijN6sKlC96y3IsKkXFFO1iZurNBHCm73vThcin4YQ1i58QgqcJkKg7XsrQMwvVQlSOHvxYOHTOKHJBCH2yfLCcN88DbTEtrCbuS7oOzYMiqnaJN1KS98l/N61p17h8rJSuazsJUQDpk1ZvEQfx1Wog/t/X6LHCi4lrKHvQCq8krOWW8Dn/zEgOEWHSCefp2b8YSkKee3IXj4quPup4j+I5N+h0BN/GKmE30pvUj758kyZMmXKdAw6NBsruI3R7K39UjatVsuDAGrFGTqazYrYZYHF+EK4Re70yA1EXooIIei0dckCxumDRJdI3RPswqza0aLpAx7jG6cX4QW39OX3siMIViZfsIhvaWKpau6ihZdBVV41aegTmc1f68jx9gOhUkZ4WkGElqvyhU6vVy53EWrBIIRnHaqbDQCPEvoXqAypmtZ3/+wEgjjep2BNdV4tkwvGUOX1GibUZ7EGpWqqZsfYH6nItnzCjauqb/R8piM2QrgBkT/dUfOotqZRPqEl8erQ0rS+pm0kHg0NcSkVb4bDm5tOFde6Js9X/PnU1x9emgKLfUJlqKuq7hZcNNRDFa4atDSmyZsyblia6FQmDampS900pZb6hMBbnRRoV2CSwJLeZZcKAas3QME2pIGyFdTAhtFDKVBAiHccpBFRdZ3X3yIbGRXUykJsw4qPtVbz7veHAx+sgDASJowtfcMm6T2GCMu/q2Gq7neHAydQaEPPF14/01GpRc0OUc0lhD3UW9AQU7g2Venli69lSAFh3/UnoLDr0gXgVDep8JRaF/mp6K8p4v6/afLqZYoSTCGez61YwKLheCpqMtVCLTbDzat8G6/M3BCvDTeuPC/1vv5ihtS5ODlBhBe+pEoH9wWnF+GFbgPHaXgdV8ImRX53ocpCasXh+tnv9xWg9H1pXng1vEB5+j9oLFxRS1OH/5H2uZ5HgJUpU6ZMmTJlypQpU6ZMmTJlypQpU6ZMadF/Acw8p00Xc6R3AAAAAElFTkSuQmCC"
@@ -20,7 +20,7 @@
         },
         "text": {
           "headline": "FaMI-LEARN",
-          "text": "<p>Hỗ trợ thống kê nhanh chóng-chính xác</p>"
+          "text": "<p>Supports quick and accurate statistics</p>"
         }
       },
       {
@@ -34,12 +34,12 @@
         },
         "text": {
           "headline": "FaMI-LEARN",
-          "text": "Cung cấp đa dạng biểu đồ, linh hoạt trong trực quan hóa"
+          "text": "Provides chart diversity, flexibility in visualization"
         }
       },
       {
         "media": {
-          "url": "https://d138zd1ktt9iqe.cloudfront.net/media/seo_landing_files/two-tail-hypothesis-testing-1640062523.png"
+          "url": "https://gimasys.com/wp-content/uploads/2023/04/machine-learning-la-gi.jpeg"
         },
         "start_date": {
           "year": "2023",
@@ -47,9 +47,23 @@
         },
         "text": {
           "headline": "FaMI-LEARN",
-          "text": "Hỗ trợ các bài toán học máy nâng cao"
+          "text": "Support for advanced machine learning problems"
+        }
+      },
+      {
+        "media": {
+          "url": "https://www.promptcloud.com/wp-content/uploads/2017/09/top-big-data-communities-e1504261714290.jpg"
+        },
+        "start_date": {
+          "year": "2024",
+          "month":"1"
+        },
+        "text": {
+          "headline": "FaMI-LEARN",
+          "text": "Share your data and give back to our community"
         }
       }
+      
     ]
 }
 
