@@ -34,7 +34,7 @@ def download_files_as_zip(post):
     zip_buffer.seek(0)
 
     if st.download_button(
-        label=f"Download ({post.downloaded})",
+        label=f"Download All Files",
         data=zip_buffer,
         file_name=f"{post.title}.zip",
         mime="application/zip",
@@ -53,8 +53,25 @@ def change_vote(vote, auth_instance, post):
 
 @st.experimental_fragment
 def handle_vote(auth_instance, post):
-    vote = st.toggle(f"{count_vote(post.id)} votes", value=is_voted(auth_instance.LoginUser().id, post.id), key=f"vote {auth_instance.LoginUser().id}, {post.id}", on_change=change_vote(is_voted(auth_instance.LoginUser().id, post.id), auth_instance, post))
+    def on_vote_change():
+        change_vote(is_voted(auth_instance.LoginUser().id, post.id), auth_instance, post)
 
+    vote = st.toggle(f"{count_vote(post.id)} votes", value=is_voted(auth_instance.LoginUser().id, post.id), key=f"vote {auth_instance.LoginUser().id}, {post.id}", on_change=on_vote_change)
+
+@st.experimental_fragment
+def handle_comment(post, auth_instance):
+    new_comment = st.chat_input("Write a comment")
+
+    if new_comment:  # If the text input is not empty
+        create_comment(new_comment, auth_instance.LoginUser(), datetime.now(), post)
+
+
+    comments = list_comment(post.id)
+
+    for comment in comments:
+        with card_container(key="dataset-card"):
+            st.write(f"#### {comment.user.name} - {time_difference(comment.datetime.strftime('%Y-%m-%d %H:%M:%S'))}")
+            st.write(f"{comment.content}")
 class Post:
     def all_post():
         auth_instance = get_logged_in_user_email()
@@ -159,13 +176,15 @@ class Post:
                     with col3:
                         st.write(f"{file_extensions}")
 
-                    col1, col2 = st.columns([1,1])
+                    col1, col2, col3 = st.columns([3,1,1])
                     with col1:
-                        st.write(f"{count_vote(post.id)} votes")
+                        st.markdown(f"<small>Updated {time_difference(post.datetime.strftime('%Y-%m-%d %H:%M:%S'))}</small>", unsafe_allow_html=True)
                     with col2:
-                        st.write(f"{post.downloaded} downloaded")
+                        st.write(f"{count_vote(post.id)}❤️")
+                    with col3:
+                        st.write(f"{post.downloaded}⬇️")
 
-                    st.write(f"Updated {time_difference(post.datetime.strftime('%Y-%m-%d %H:%M:%S'))}")
+                    
 
                     btncol1, btncol2, btncol3 = st.columns(3)
                     with btncol1:
@@ -219,16 +238,8 @@ class Post:
                 pyg_app = StreamlitRenderer(df)
                 pyg_app.explorer(default_tab="data", height=730)
 
-        new_comment = st.text_input("Write a comment")
+        handle_comment(post, auth_instance)
 
-        if st.button("Submit Comment"):
-            create_comment(new_comment, auth_instance.LoginUser(), datetime.now(), post)
-            st.write("comment")
-
-        comments = list_comment(post.id)
-
-        for comment in comments:
-            st.write(f"{comment.content}")
 
     @st.experimental_dialog("Create post", width="large")
     def create_post():
