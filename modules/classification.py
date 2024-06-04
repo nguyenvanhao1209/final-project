@@ -114,7 +114,28 @@ def pre_train(data):
             return X, y, feature_columns
 
 def train_test(X, y):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    with st.popover("Train and test subsets", use_container_width=True):
+        text_test_size = """
+        ### test_size: float or int, default=None
+        If float, should be between 0.0 and 1.0 and represent the proportion of the dataset to include in the test split. If int, represents the absolute number of test samples. If None, the value is set to the complement of the train size. If train_size is also None, it will be set to 0.25.
+        """
+        test_size = st.slider("Choose test size", min_value=0.0, max_value=1.0, step=0.01, value=0.25, help=text_test_size)
+        text_random_state = """
+        ### random_state: int, RandomState instance or None, default=None
+        Controls the shuffling applied to the data before applying the split. Pass an int for reproducible output across multiple function calls.
+        """
+        random_state = st.number_input("Choose random state", value=None, help=text_random_state)
+        text_stratify = """
+        ### stratify: array-like, default=None
+        If not None, data is split in a stratified fashion, using this as the class labels.
+        """
+        stratify_box = st.checkbox("Use stratify", value=False, help=text_stratify)
+        if stratify_box:
+            stratify = y
+        else:
+            stratify = None
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state, stratify=stratify)
     return X_train, X_test, y_train, y_test
 
 
@@ -332,7 +353,7 @@ class Classification:
                 """
                 min_weight_fraction_leaf = st.number_input("Choose min_weight_fraction_leaf", value=0.0, help=text_min_weight_fraction_leaf)
                 text_max_features = """
-                ### max_features: {“auto”, “sqrt”, “log2”}, int or float, default=”auto”
+                ### max_features: {“auto”, “sqrt”, “log2”}, int or float, default=”sqrt”
                 The number of features to consider when looking for the best split:
                 - If int, then consider max_features features at each split.
                 - If float, then max_features is a fraction and max(1, int(max_features * n_features_in_)) features are considered at each split.

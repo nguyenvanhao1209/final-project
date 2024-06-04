@@ -6,12 +6,14 @@ import statsmodels.api as sm
 import scipy.stats as stats
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, mean_squared_error
 from sklearn import feature_selection
 from statsmodels.stats.anova import anova_lm
 from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import Ridge
 from sklearn.linear_model import Lasso
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 
@@ -19,7 +21,7 @@ def get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, targ
     y_pred = model.predict(X_test)
 
     # Evaluate the model
-    mse = ((y_pred - y_test) ** 2).mean()
+    mse = mean_squared_error(y_test, y_pred)
     rmse = np.sqrt(mse)
     r2 = r2_score(y_test, y_pred)
 
@@ -32,7 +34,8 @@ def get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, targ
     # Coefficients
     with col1:
         st.markdown("Coefficients")
-        st.dataframe(pd.DataFrame({"Coefficients": [model.intercept_, model.coef_[0]]}))
+        if hasattr(model, 'intercept_'):
+            st.dataframe(pd.DataFrame({"Coefficients": [model.intercept_, model.coef_[0]]}))
 
     # Residuals Statistics\
     with col2:
@@ -50,19 +53,21 @@ def get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, targ
         st.dataframe(pd.DataFrame({"MSE": [mse], "RMSE": [rmse], "R-squared": [r2]}))
 
     # Plot the predicted values vs. the actual values
-    if len(feature_columns) == 1:
-        fig = px.scatter(x=X_train.squeeze(), y=y_train, trendline="ols", labels={
-            "x": feature_columns[0],
-            "y": target_column
-        }, trendline_color_override="red")
-        st.plotly_chart(fig, theme=None, use_container_width=True)
+    if hasattr(model, 'intercept_'):
+        if len(feature_columns) == 1:
+            fig = px.scatter(x=X_train.squeeze(), y=y_train, trendline="ols", labels={
+                "x": feature_columns[0],
+                "y": target_column
+            }, trendline_color_override="red")
+            st.plotly_chart(fig, theme=None, use_container_width=True)
 
-    # Print the equation of the linear regression model
-    equation = r"y = {:.2f}".format(model.intercept_)
-    for i, coef in enumerate(model.coef_):
-        equation += r" + {:.2f}x_{}".format(coef, i)
-    st.markdown(f"The equation is : <span style='color: green'></span>", unsafe_allow_html=True)
-    st.latex(equation)
+    if hasattr(model, 'intercept_'):
+        # Print the equation of the linear regression model
+        equation = r"y = {:.2f}".format(model.intercept_)
+        for i, coef in enumerate(model.coef_):
+            equation += r" + {:.2f}x_{}".format(coef, i)
+        st.markdown(f"The equation is : <span style='color: green'></span>", unsafe_allow_html=True)
+        st.latex(equation)
 
     # Get the column names from the data
     columns = feature_columns
@@ -122,7 +127,28 @@ def pre_train(data):
     return X, y, feature_columns, target_column
 
 def train_test(X, y):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    with st.popover("Train and test subsets", use_container_width=True):
+        text_test_size = """
+        ### test_size: float or int, default=None
+        If float, should be between 0.0 and 1.0 and represent the proportion of the dataset to include in the test split. If int, represents the absolute number of test samples. If None, the value is set to the complement of the train size. If train_size is also None, it will be set to 0.25.
+        """
+        test_size = st.slider("Choose test size", min_value=0.0, max_value=1.0, step=0.01, value=0.25, help=text_test_size)
+        text_random_state = """
+        ### random_state: int, RandomState instance or None, default=None
+        Controls the shuffling applied to the data before applying the split. Pass an int for reproducible output across multiple function calls.
+        """
+        random_state = st.number_input("Choose random state", value=None, help=text_random_state)
+        text_stratify = """
+        ### stratify: array-like, default=None
+        If not None, data is split in a stratified fashion, using this as the class labels.
+        """
+        stratify_box = st.checkbox("Use stratify", value=False, help=text_stratify)
+        if stratify_box:
+            stratify = y
+        else:
+            stratify = None
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state, stratify=stratify)
     return X_train, X_test, y_train, y_test
 class Regression:
     def simple_linear_regresstion(data):
@@ -319,6 +345,192 @@ class Regression:
 
             get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, target_column)
 
+    def knn_regression(data):
+        X, y, feature_columns, target_column = pre_train(data)
+
+        if X is not None and y is not None:
+            X_train, X_test, y_train, y_test = train_test(X, y)
+
+            with st.popover("Choose parameter", use_container_width=True):
+                text_n_neighbors = """
+                ### **n_neighbors**: ***int***, **default=5**.
+                Number of neighbors to use by default for kneighbors queries."""
+                n_neighbors = st.slider("Choose n_neighbors", 1, 50, value=5, help=text_n_neighbors)
+                text_weights = """
+                ### weights: {‘uniform’, ‘distance’}, callable or None, default=’uniform’
+                Weight function used in prediction. Possible values:
+                - ‘uniform’ : uniform weights. All points in each neighborhood are weighted equally.
+                - ‘distance’ : weight points by the inverse of their distance. in this case, closer neighbors of a query point will have a greater influence than neighbors which are further away.
+                - [callable] : a user-defined function which accepts an array of distances, and returns an array of the same shape containing the weights.
+                """
+                weights = st.selectbox("Choose weights", ('uniform', 'distance'), help=text_weights)
+                text_metrix = """
+                ### metric: string or callable, default=’minkowski’
+                Metric to use for distance computation. Default is “minkowski”, which results in the standard Euclidean distance when p = 2. See the documentation of scipy.spatial.distance and the metrics listed in distance_metrics for valid metric values.
+                """
+                metric = st.selectbox("Choose metric", ('minkowski', 'euclidean', 'manhattan', 'chebyshev', 'cosine', 'canberra'), help=text_metrix)
+                text_algorithm = """
+                ### algorithm{‘auto’, ‘ball_tree’, ‘kd_tree’, ‘brute’}, default=’auto’
+                Algorithm used to compute the nearest neighbors:
+                - ‘ball_tree’ will use BallTree
+                - ‘kd_tree’ will use KDTree
+                - ‘brute’ will use a brute-force search.
+                - ‘auto’ will attempt to decide the most appropriate algorithm based on the values passed to fit method.
+                #### Note: fitting on sparse input will override the setting of this parameter, using brute force.
+                """
+                algorithm = st.selectbox("Choose algorithm", ('auto', 'ball_tree', 'kd_tree', 'brute'), help=text_algorithm)
+                text_leaf_size = """
+                ### leaf_size: int, default=30
+                Leaf size passed to BallTree or KDTree. This can affect the speed of the construction and query, as well as the memory required to store the tree. The optimal value depends on the nature of the problem.
+                """
+                leaf_size = st.number_input("Choose leaf_size", value=30, help=text_leaf_size)
+
+            params = {
+                "n_neighbors": n_neighbors,
+                "weights": weights,
+                "metric": metric,
+                "algorithm": algorithm,
+                "leaf_size": leaf_size
+            }
+
+            model = KNeighborsRegressor()
+            model.set_params(**params)
+            model.fit(X_train, y_train)
+
+            get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, target_column)
+
+    def random_forest_regression(data):
+        X, y, feature_columns, target_column = pre_train(data)
+
+        if X is not None and y is not None:
+            X_train, X_test, y_train, y_test = train_test(X, y)
+
+            with st.popover("Choose parameter", use_container_width=True):
+                text_n_estimators = """
+                ### n_estimators: int, default=100
+                The number of trees in the forest.
+                """
+                n_estimators = st.number_input("Choose n_estimators", value=100, help=text_n_estimators)
+                text_criterion = """
+                ### criterion: {“squared_error”, “absolute_error”, “friedman_mse”, “poisson”}, default=”squared_error”
+                The function to measure the quality of a split. Supported criteria are “squared_error” for the mean squared error, which is equal to variance reduction as feature selection criterion and minimizes the L2 loss using the mean of each terminal node, “friedman_mse”, which uses mean squared error with Friedman’s improvement score for potential splits, “absolute_error” for the mean absolute error, which minimizes the L1 loss using the median of each terminal node, and “poisson” which uses reduction in Poisson deviance to find splits. Training using “absolute_error” is significantly slower than when using “squared_error”.
+                """
+                criterion = st.selectbox("Choose criterion", ('squared_error', 'absolute_error', 'friedman_mse', 'poisson'), help=text_criterion)
+                text_max_depth = """
+                ### max_depth: int, default=None
+                The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.
+                """
+                max_depth = st.number_input("Choose max_depth", value=None, help=text_max_depth)
+                text_min_samples_split = """
+                ### min_samples_split: int or float, default=2
+                The minimum number of samples required to split an internal node:
+                - If int, then consider min_samples_split as the minimum number.
+                - If float, then min_samples_split is a fraction and ceil(min_samples_split * n_samples) are the minimum number of samples for each split.
+                """
+                min_samples_split = st.number_input("Choose min_samples_split", value=2, help=text_min_samples_split)
+                text_min_samples_leaf = """
+                ### min_samples_leaf: int or float, default=1
+                The minimum number of samples required to be at a leaf node. A split point at any depth will only be considered if it leaves at least min_samples_leaf training samples in each of the left and right branches. This may have the effect of smoothing the model, especially in regression.
+                - If int, then consider min_samples_leaf as the minimum number.
+                - If float, then min_samples_leaf is a fraction and ceil(min_samples_leaf * n_samples) are the minimum number of samples for each node.
+                """
+                min_samples_leaf = st.number_input("Choose min_samples_leaf", value=1, help=text_min_samples_leaf)
+                text_min_weight_fraction_leaf = """
+                ### min_weight_fraction_leaf: float, default=0.0
+                The minimum weighted fraction of the sum total of weights (of all the input samples) required to be at a leaf node. Samples have equal weight when sample_weight is not provided.
+                """
+                min_weight_fraction_leaf = st.number_input("Choose min_weight_fraction_leaf", value=0.0, help=text_min_weight_fraction_leaf)
+                text_max_features = """
+                ### max_features: {“auto”, “sqrt”, “log2”}, int or float, default=”auto”
+                The number of features to consider when looking for the best split:
+                - If int, then consider max_features features at each split.
+                - If float, then max_features is a fraction and max(1, int(max_features * n_features_in_)) features are considered at each split.
+                - If “sqrt”, then max_features=sqrt(n_features).
+                - If “log2”, then max_features=log2(n_features).
+                - If None, then max_features=n_features.
+                """
+                max_features = st.selectbox("Choose max_features", ('sqrt', 'log2', None), index=2, help=text_max_features)
+                text_max_leaf_nodes = """
+                ### max_leaf_nodes: int, default=None
+                Grow trees with max_leaf_nodes in best-first fashion. Best nodes are defined as relative reduction in impurity. If None then unlimited number of leaf nodes.
+                """
+                max_leaf_nodes = st.number_input("Choose max_leaf_nodes", value=None, help=text_max_leaf_nodes)
+                text_min_impurity_decrease = """
+                ### min_impurity_decrease: float, default=0.0
+                A node will be split if this split induces a decrease of the impurity greater than or equal to this value.
+                """
+                min_impurity_decrease = st.number_input("Choose min_impurity_decrease", value=0.0, help=text_min_impurity_decrease)
+                text_bootstrap = """
+                ### bootstrap: bool, default=True
+                Whether bootstrap samples are used when building trees. If False, the whole dataset is used to build each tree.
+                """
+                bootstrap = st.selectbox("Choose bootstrap", (True, False), index=0, help=text_bootstrap)
+                text_oob_score = """
+                ### oob_score: bool or callable, default=False
+                Whether to use out-of-bag samples to estimate the generalization score. By default, accuracy_score is used. Provide a callable with signature metric(y_true, y_pred) to use a custom metric. Only available if bootstrap=True.
+                """
+                oob_score = st.selectbox("Choose oob_score", (True, False), index=1, help=text_oob_score)
+                text_n_jobs = """
+                ### n_jobs: int, default=None
+                The number of jobs to run in parallel. fit, predict, decision_path and apply are all parallelized over the trees. None means 1 unless in a joblib.parallel_backend context. -1 means using all processors. See Glossary for more details.
+                """
+                n_jobs = st.number_input("Choose n_jobs", value=None, help=text_n_jobs)
+                text_random_state = """
+                ### random_state: int, RandomState instance or None, default=None
+                Controls both the randomness of the bootstrapping of the samples used when building trees (if bootstrap=True) and the sampling of the features to consider when looking for the best split at each node (if max_features < n_features).
+                """
+                random_state = st.number_input("Choose random_state", value=None, help=text_random_state)
+                text_verbose = """
+                ### verbose: int, default=0
+                Controls the verbosity when fitting and predicting.
+                """
+                verbose = st.number_input("Choose verbose", value=0, help=text_verbose)
+                text_warm_start = """
+                ### warm_start: bool, default=False
+                When set to True, reuse the solution of the previous call to fit and add more estimators to the ensemble, otherwise, just fit a whole new forest.
+                """
+                warm_start = st.selectbox("Choose warm_start", (True, False), index=1, help=text_warm_start)
+                text_ccp_alpha = """
+                ### ccp_alpha: non-negative float, default=0.0
+                Complexity parameter used for Minimal Cost-Complexity Pruning. The subtree with the largest cost complexity that is smaller than ccp_alpha will be chosen. By default, no pruning is performed.
+                """
+                ccp_alpha = st.number_input("Choose ccp_alpha", value=0.0, help=text_ccp_alpha)
+                text_max_samples = """
+                ### max_samples: int or float, default=None
+                If bootstrap is True, the number of samples to draw from X to train each base estimator.
+                - If None (default), then draw X.shape[0] samples.
+                - If int, then draw max_samples samples.
+                - If float, then draw max(round(n_samples * max_samples), 1) samples. Thus, max_samples should be in the interval (0.0, 1.0].
+                """
+                max_samples = st.number_input("Choose max_samples", value=None, help=text_max_samples)
+            
+            params = {
+                "n_estimators": n_estimators,
+                "criterion": criterion,
+                "max_depth": max_depth,
+                "min_samples_split": min_samples_split,
+                "min_samples_leaf": min_samples_leaf,
+                "min_weight_fraction_leaf": min_weight_fraction_leaf,
+                "max_features": max_features,
+                "max_leaf_nodes": max_leaf_nodes,
+                "min_impurity_decrease": min_impurity_decrease,
+                "bootstrap": bootstrap,
+                "oob_score": oob_score,
+                "n_jobs": n_jobs,
+                "random_state": random_state,
+                "verbose": verbose,
+                "warm_start": warm_start,
+                "ccp_alpha": ccp_alpha,
+                "max_samples": max_samples
+            }
+
+            model = RandomForestRegressor()
+            model.set_params(**params)
+            model.fit(X_train, y_train)
+            
+            get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, target_column)
+
+
     def run(data):
         st.write(" # Hồi quy tuyến tính # ")
         st.write("#### Dữ liệu ####")
@@ -326,10 +538,14 @@ class Regression:
         with st.expander("See data", expanded=True):
             edit_data = st.data_editor(data, use_container_width=True, num_rows="dynamic")
         st.markdown("---")
-        regression_type = st.selectbox("", ["OLS Linear Regression", 'Ridge', 'Lasso'])
+        regression_type = st.selectbox("", ["OLS Linear Regression", 'Ridge', 'Lasso', 'KNN', 'Random Forest'])
         if regression_type == "OLS Linear Regression":
-            Regression.simple_linear_regresstion(data)
+            Regression.simple_linear_regresstion(edit_data)
         if regression_type == "Ridge":
-            Regression.ridge_regression(data)
+            Regression.ridge_regression(edit_data)
         if regression_type == "Lasso":
-            Regression.lasso_regression(data)
+            Regression.lasso_regression(edit_data)
+        if regression_type == "KNN":
+            Regression.knn_regression(edit_data)
+        if regression_type == "Random Forest":
+            Regression.random_forest_regression(edit_data)
