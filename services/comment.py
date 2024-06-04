@@ -15,7 +15,7 @@ db = firestore.client()
 
 def create_comment(content, user, datetime, post):
     id = str(uuid.uuid4())
-    comment = Comment(id=id,content=content, user=user, datetime=datetime, post=post)
+    comment = Comment(id=id, content=content, user=user, datetime=datetime, post=post)
     comment_dict = asdict(comment)  # Convert the Comment object to a dictionary
     comment_dict['user'] = asdict(comment.user)  # Convert the User object to a dictionary
     comment_dict['post'] = asdict(comment.post)  # Convert the Post object to a dictionary
@@ -23,7 +23,7 @@ def create_comment(content, user, datetime, post):
     db.collection('comments').add(comment_dict)  # Add the comment to the 'comments' collection in Firestore
 
 def list_comment(post_id):
-    comments = db.collection('comments').where(field_path='post.id', op_string='==', value=post_id).stream()
+    comments = db.collection('comments').where('post.id', '==', post_id).stream()
     comment_list = []
     for comment in comments:
         comment_dict = comment.to_dict()

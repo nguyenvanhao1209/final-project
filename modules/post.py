@@ -223,6 +223,7 @@ class Post:
 
         if st.button("Submit Comment"):
             create_comment(new_comment, auth_instance.LoginUser(), datetime.now(), post)
+            st.write("comment")
 
         comments = list_comment(post.id)
 
