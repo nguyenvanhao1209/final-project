@@ -13,6 +13,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import Ridge
 from sklearn.linear_model import Lasso
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from PIL import Image
 
 
 def get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, target_column):
@@ -320,9 +321,15 @@ class Regression:
             get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, target_column)
 
     def run(data):
-        st.write(" # Hồi quy tuyến tính # ")
-        st.write("#### Dữ liệu ####")
-        st.write("Data")
+        content_image = Image.open("image/content3.png")
+        col1, col2 = st.columns([3,1])
+        with col1:
+            st.markdown(" # Regression # ")
+            st.markdown("""<p>Provide a variety of linear models for regresstion</p>""", unsafe_allow_html=True)
+        with col2:
+            st.image(content_image)
+        st.markdown("---")
+        st.write("#### Your data ####")
         with st.expander("See data", expanded=True):
             edit_data = st.data_editor(data, use_container_width=True, num_rows="dynamic")
         st.markdown("---")

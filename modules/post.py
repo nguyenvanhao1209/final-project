@@ -58,10 +58,10 @@ def handle_vote(auth_instance, post):
 class Post:
     def all_post():
         auth_instance = get_logged_in_user_email()
-        st.write(" # Tập dữ liệu # ")
+        st.write(" # Datasets # ")
         col1, col2 = st.columns([5, 1])
         with col1:
-            st.write("Khám phá, phân tích và chia sẻ dữ liệu chất lượng")
+            st.write("Discover, analyze and share quality data")
         with col2:
             if st.button("Upload your data", type="primary", key="upload_data"):
                 Post.create_post()

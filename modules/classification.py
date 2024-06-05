@@ -1,5 +1,4 @@
 from cmath import nan
-import inspect
 from sklearn import svm
 import streamlit as st
 import pandas as pd
@@ -17,6 +16,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix
 import plotly.figure_factory as ff
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from PIL import Image
 
 
 def get_classification_report(y_test, y_pred):
@@ -625,9 +625,15 @@ class Classification:
             get_result(svc, X, X_train, X_test, y_test, feature_columns)
 
     def run(data):
-        st.write(" # Phân lớp # ")
-        st.write("#### Dữ liệu ####")
-        st.write("Data")
+        content_image = Image.open("image/content4.png")
+        col1, col2 = st.columns([3,1])
+        with col1:
+            st.markdown(" # Classification # ")
+            st.markdown("""<p>Provide many different classification methods</p>""", unsafe_allow_html=True)
+        with col2:
+            st.image(content_image)
+        st.markdown("---")
+        st.write("#### Your data ####")
         with st.expander("See data", expanded=True):
             edit_data = st.data_editor(data, use_container_width=True, num_rows="dynamic")
         st.markdown("---")
