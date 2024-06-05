@@ -5,6 +5,9 @@ from sklearn.metrics import silhouette_samples, silhouette_score
 from sklearn.cluster import KMeans, DBSCAN, OPTICS, MeanShift, estimate_bandwidth
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import plotly.graph_objects as go
+from PIL import Image
+
+
 
 
 def get_result(model, X, X_scaled, feature_columns):
@@ -275,7 +278,14 @@ class Clustering:
             get_result(meanshift, X, X_scaled, feature_columns)
 
     def run(data):
-        st.markdown(" # Clustering # ", help="Popular unsupervised clustering algorithms.")
+        content_image = Image.open("image/content6.png")
+        col1, col2 = st.columns([3,1])
+        with col1:
+            st.markdown(" # Clustering # ")
+            st.markdown("""<p>Provide popular unsupervised clustering algorithms.</p>""", unsafe_allow_html=True)
+        with col2:
+            st.image(content_image)
+        st.markdown("---")
         st.write("#### Your data ####")
         with st.expander("See data", expanded=True):
             edit_data = st.data_editor(data, use_container_width=True, num_rows="dynamic")

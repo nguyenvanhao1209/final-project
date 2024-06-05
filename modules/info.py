@@ -23,8 +23,15 @@ from streamlit_shadcn_ui import slider, input, textarea, radio_group, switch
 class Info:
 
     def info(data):
-        st.write(" # Thông tin dữ liệu # ")
-        st.write("#### Dữ liệu ####")
+        content_image = Image.open("image/content1.png")
+        col1, col2 = st.columns([5,1])
+        with col1:
+            st.markdown(" # Data infomation # ")
+            st.markdown("""<p>Detail infomation of dataset </p>""", unsafe_allow_html=True)
+        with col2:
+            st.image(content_image)
+        st.markdown("---")
+        st.write("#### Your data ####")
         filtered_df = dataframe_explorer(data, case=False)
         st.dataframe(filtered_df, use_container_width=True)
         st.download_button(
@@ -35,36 +42,13 @@ class Info:
         )
         st.markdown("---")
 
-        st.write("#### Thông tin ####")
+        st.write("#### Detail information ####")
         r = data.shape[0]
         c = data.shape[1]
-        st.markdown(f"Kích thước dữ liệu: :red[{r}] x :red[{c}]")
-
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            st.write("Tên cột: ")
-            st.dataframe(data.columns, use_container_width=True)
-
-        with col2:
-            st.write("Kiểu dữ liệu cột: ")
-            st.dataframe(data.dtypes, use_container_width=True)
-
-        with col3:
-            st.write("Unique Values: ")
-            st.dataframe(data.nunique(), use_container_width=True)
-
-        st.markdown("---")
-
-        st.markdown("#### Missing Values ####")
-        col1n, col2n = st.columns([2, 3])
-        with col1n:
-            st.dataframe(data.isnull().sum(), use_container_width=True)
-        with col2n:
-            st.markdown(
-                "   Missing value (giá trị thiếu) trong khoa học dữ liệu và phân tích dữ liệu là giá trị không tồn tại hoặc không được xác định trong tập dữ liệu.")
-            st.markdown(
-                "Missing value có thể xảy ra khi dữ liệu bị mất hoặc bị lỗi trong quá trình thu thập hoặc nhập liệu, hoặc có thể do một giá trị không có ý nghĩa được đại diện bởi các giá trị như NaN (Not a Number) hoặc NULL trong các ngôn ngữ lập trình.")
+        col1f, col2f = st.columns([4,1])
+        with col1f:
+            st.markdown(f"Data size: :red[{r}] x :red[{c}]")
+        with col2f:
             data.dropna(inplace=True)
             data.reset_index(drop=True, inplace=True)
 
@@ -74,4 +58,25 @@ class Info:
                 file_name='data_clean.csv',
                 mime='text/csv',
             )
+        
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            st.write("Columns: ")
+            st.dataframe(data.columns, use_container_width=True)
+
+        with col2:
+            st.write("Data types: ")
+            st.dataframe(data.dtypes, use_container_width=True)
+
+        with col3:
+            st.write("Unique Values: ")
+            st.dataframe(data.nunique(), use_container_width=True)
+        with col4:
+            st.markdown("Missing Values: ")
+            st.dataframe(data.isnull().sum(), use_container_width=True)
+
+        
+        
 

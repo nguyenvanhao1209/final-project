@@ -3,6 +3,10 @@ from streamlit_timeline import timeline
 from PIL import Image
 
 
+with open( "style.css" ) as css:
+    st.markdown( f'<style>{css.read()}</style>' , unsafe_allow_html= True)
+
+
 def get_step_image(icon, image):
     st.markdown(
         f"""

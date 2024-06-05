@@ -17,13 +17,11 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-from modules import Chart, Info, Regression, Classification, Clustering, Post
+from modules import Chart, Info, Statistic , Regression, Classification, Clustering, Post
 from components import Navbar, Footer, Content
 
 with open( "style.css" ) as css:
     st.markdown( f'<style>{css.read()}</style>' , unsafe_allow_html= True)
-
-
 
 
 
@@ -34,51 +32,6 @@ def load_data(file):
         return pd.read_csv(file)
     elif file_extension in ['.xlsx', '.xls']:
         return pd.read_excel(file)
-
-
-def summary(df):
-    summary = df.describe()
-    return summary
-
-
-def summary_p(df):
-    summary = df.describe()
-    return summary
-
-
-### analyze_data      
-def analyze_data(data):
-    # Perform basic data analysis
-    st.write(" # Data Analysis # ")
-    st.write("#### Dữ liệu ####")
-    st.write("Data")
-    with st.expander("See data", expanded=True):
-        edited_df = st.data_editor(data,use_container_width=True,num_rows="dynamic")
-
-    st.markdown("---")
-    ######
-    st.write("#### Thống kê mô tả một chiều ####")
-
-    st.markdown("###### Bảng giá trị thống kê mô tả ######")
-    use_sample_stats = st.checkbox('Hiệu chỉnh mẫu thống kê', value=True)
-    if use_sample_stats:
-        # compute and show the sample statistics
-        st.dataframe(summary(edited_df), use_container_width=True)
-        st.download_button(
-            label="Download data as CSV",
-            data=summary(data).to_csv(index=False),
-            file_name='data_analyze.csv',
-            mime='text/csv')
-
-    else:
-        # compute and show the population statistics
-        st.dataframe(summary_p(edited_df), use_container_width=True)
-        st.download_button(
-            label="Download data as CSV",
-            data=summary_p(data).to_csv(index=False),
-            file_name='data_analyze.csv',
-            mime='text/csv')
-    
 
 
 #### Data visualization
@@ -132,12 +85,18 @@ def main():
                 Info.info(data)
 
             if selected == 'Statistic':
-                analyze_data(data)
+                Statistic.analyze_data(data)
 
             if selected == 'Visualization':
-                st.write(" # Trực quan hóa dữ liệu # ")
-                st.write("#### Dữ liệu ####")
-                st.write("Data")
+                content_image = Image.open("image/content2.png")
+                col1, col2 = st.columns([3,1])
+                with col1:
+                    st.markdown(" # Visualization # ")
+                    st.markdown("""<p>Easy to visualize your data with drag and drop</p>""", unsafe_allow_html=True)
+                with col2:
+                    st.image(content_image)
+                st.markdown("---")
+                st.write("#### Your data ####")
                 with st.expander("See data", expanded=True):
                     edit_data = st.data_editor(data, use_container_width=True, num_rows="dynamic")
                 create_chart(edit_data)
