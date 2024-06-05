@@ -26,7 +26,7 @@ class Auth:
 
   def register(email, password, name):
     user = auth.create_user_with_email_and_password(email, password)
-    auth.update_profile(user['idToken'], display_name=name)
+    auth.update_profile(user['idToken'], display_name=name, photo_url="https://firebasestorage.googleapis.com/v0/b/streamlit-ml.appspot.com/o/default_avatar.jpg?alt=media&token=904dcf59-b972-43dd-9976-beba0525783e")
     return user
   
   def logout():

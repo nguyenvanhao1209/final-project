@@ -252,15 +252,18 @@ class Post:
             image = st.file_uploader("Upload a image")
             submitted = st.form_submit_button("Submit", type="primary")
             if submitted:
-                create_post(
-                    title,
-                    content,
-                    auth_instance.LoginUser(),
-                    datetime.now(),
-                    files,
-                    image,
-                )
-                st.rerun()
+                if title and content and files:
+                    create_post(
+                        title,
+                        content,
+                        auth_instance.LoginUser(),
+                        datetime.now(),
+                        files,
+                        image,
+                    )
+                    st.rerun()
+                else:
+                    st.error("Title, content, and files are required.")
 
     @st.experimental_dialog("Update post", width="large")
     def update_post(post):
