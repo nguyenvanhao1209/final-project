@@ -89,7 +89,7 @@ def get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, targ
         input_data[column] = pd.to_numeric(input_data[column], errors='ignore')
 
     if input_data.isnull().values.any():
-        st.warning('Warning: Vui lòng điền đầy đủ các giá trị.')
+        st.warning('Warning: Please fill in all values.')
     else:
         input_data = input_data.reindex(columns=X.columns, fill_value=0)
         # Make a prediction
@@ -101,18 +101,20 @@ def get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, targ
 def pre_train(data):
     data_copy = data.copy()
     data_number_colum = data_copy.select_dtypes(include=["int", "float"]).columns
+    
+    
 
     # Select the target variable
-    target_column = st.selectbox("Chọn biến mục tiêu", data_number_colum)
+    target_column = st.selectbox("Select target column", data_number_colum)
 
     # Select feature variables
-    feature_columns = st.multiselect("Chọn biến tính năng", data_number_colum, default=[target_column])
+    feature_columns = st.multiselect("Select feature columns", data_number_colum)
 
-    if len(feature_columns) == 0:
-        st.error("Please select at least one feature variable.")
+    if not feature_columns:
+        st.container().warning("Please select at least one feature variable.")
         return None, None, None, None
     
-    scaler_type = st.selectbox('Chọn kiểu scale',('None', 'Standard Scaler', 'Min-max Scaler'))
+    scaler_type = st.selectbox('Select scale type',('None', 'Standard Scaler', 'Min-max Scaler'))
     # Split the data into training and testing sets
     X = data_copy[feature_columns]
     standardScaler = StandardScaler()
