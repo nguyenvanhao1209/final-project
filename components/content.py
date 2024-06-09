@@ -6,6 +6,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from services.google_login import get_logged_in_user_email
 import base64
+from services.user import count_users, count_posts, count_user_posts, count_user_comments, count_user_votes, count_comments_in_user_posts, get_last_login
 
 
 
@@ -141,56 +142,56 @@ class Content:
         col1_in, col2_in, col3_in = st.columns([1,1,2])
         with col1_in:
             st.markdown(
-                """
+                f"""
                 <div class="dataset-card">
                     <div class="dataset-icon">
                         <i class="fas fa-database"></i>
                     </div>
                     <div class="dataset-info">
                         <h3>Datasets</h3>
-                        <p>1 total created</p>
+                        <p>{count_user_posts(user.LoginUser().id)} total created</p>
                     </div>
                 </div>
                 """, unsafe_allow_html=True
             )
             
             st.markdown(
-                """
+                f"""
                 <div class="dataset-card">
                     <div class="dataset-icon">
-                        <i class="fas fa-database"></i>
+                        <i class="fa-solid fa-comment"></i>
                     </div>
                     <div class="dataset-info">
-                        <h3>Datasets</h3>
-                        <p>1 total created</p>
+                        <h3>Comments</h3>
+                        <p>{count_user_comments(user.LoginUser().id)} total created</p>
                     </div>
                 </div>
                 """, unsafe_allow_html=True
             )
         with col2_in:
             st.markdown(
-                """
+                f"""
                 <div class="dataset-card">
                     <div class="dataset-icon">
-                        <i class="fas fa-database"></i>
+                        <i class="fa-solid fa-star"></i>
                     </div>
                     <div class="dataset-info">
-                        <h3>Datasets</h3>
-                        <p>1 total created</p>
+                        <h3>Votes</h3>
+                        <p>{count_user_votes(user.LoginUser().id)} total created</p>
                     </div>
                 </div>
                 """, unsafe_allow_html=True
             )
             
             st.markdown(
-                """
+                f"""
                 <div class="dataset-card">
                     <div class="dataset-icon">
-                        <i class="fas fa-database"></i>
+                        <i class="fa-solid fa-reply"></i>
                     </div>
                     <div class="dataset-info">
-                        <h3>Datasets</h3>
-                        <p>1 total created</p>
+                        <h3>Reply</h3>
+                        <p>{count_comments_in_user_posts(user.LoginUser().id)} total created</p>
                     </div>
                 </div>
                 """, unsafe_allow_html=True
@@ -274,19 +275,19 @@ class Content:
 
             # Main layout
             st.markdown(
-                """
+                f"""
                 <div class="stat-container">
                     <div class="stat-card">
                         <h3>LOGIN STREAK</h3>
-                        <p>1</p>
-                        <div class="subtext">Your longest is 5 days,</div>
+                        <p>{get_last_login(user.LoginUser().id)}</p>
+                        <div class="subtext">Your longest is {get_last_login(user.LoginUser().id)} days,</div>
                     </div>
                     <div class="stat-card">
                         <h3>TIER PROGRESS</h3>
                         <div class="circle-progress">
                             <svg width="100" height="100">
                                 <circle cx="50" cy="50" r="45" stroke="#ff4b4b" stroke-width="10" fill="none"/>
-                                <circle cx="50" cy="50" r="45" stroke="#ff4b4b" stroke-width="10" fill="none" stroke-dasharray="{percent * 2.83} 283" />
+                                <circle cx="50" cy="50" r="45" stroke="#ff4b4b" stroke-width="10" fill="none" stroke-dasharray="{50 * 2.83} 283" />
                             </svg>
                             <div class="progress-value"> 50% </div>
                     </div>
@@ -299,9 +300,9 @@ class Content:
         with col1:
             card_metric([255,164,33], [256,256,256], "fa-solid fa-laptop-code","50+","We provide state-of-the-art machine learning algorithms",1)
         with col2:
-            card_metric([0,192,242], [256,256,256], "fa-solid fa-users","10+","We have strong communities with interesting members" ,2)
+            card_metric([0,192,242], [256,256,256], "fa-solid fa-users",count_users(),"We have strong communities with interesting members" ,2)
         with col3:
-            card_metric([128,61,245], [256,256,256], "fa-solid fa-database","10+", "We have lots of great and useful datasets that you can use for free",124)
+            card_metric([128,61,245], [256,256,256], "fa-solid fa-database",count_posts(), "We have lots of great and useful datasets that you can use for free",124)
         st.markdown("---")
         st.markdown(" ##### How to use my app")
         col_step = st.columns(4)
@@ -314,15 +315,4 @@ class Content:
             get_step_image("fa-fill-drip","Fill your paramater", "step3.png",200, image_border=0.1, hover_effect=1.1)
         with col_step[3]:
             get_step_image("fa-square-poll-vertical","Get the result", "step4.png",200, image_border=0.1, hover_effect=1.1)
-            
-        
-        
-        
-        
-        
-        
-            
-            
-            
-            
-        
+
