@@ -3,6 +3,9 @@ import json
 from datetime import datetime
 import streamlit as st
 from streamlit_star_rating import st_star_rating
+import requests
+from PIL import Image
+from io import BytesIO
 
 def get_name_email(token):
     # Split the token into its three parts: header, payload, and signature
@@ -151,3 +154,14 @@ def display_vote_detail(values, point, total):
     with col2:
         for i, value in enumerate(values, 1):
             custom_progress_bar(str(6 - i), value)
+
+def image_with_name(name):
+    param = {
+        "name": name,
+        "rounded": True,
+        "size": 45
+    }
+
+    url = requests.Request('GET', 'https://ui-avatars.com/api/', params=param).prepare().url
+
+    return url
