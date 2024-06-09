@@ -47,7 +47,7 @@ def pre_train(data):
     X = data_copy[feature_columns]
 
     if not feature_columns:
-        st.warning("Please select feature columns")
+        st.container().warning("Please select feature columns")
         return None, None, None
     else:
         scaler_type = st.selectbox("Select scale type", ("None", "Standard Scaler", "Min-max Scaler"))

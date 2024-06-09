@@ -4,13 +4,17 @@ import base64
 from PIL import Image
 from local_components import card_container
 
-logo_path = r'logo1.png'
+
+logo_path = r'image/logo-no-background.png'
 with open(logo_path, "rb") as image_file:
     encoded_logo = base64.b64encode(image_file.read()).decode('utf-8')
+    
+im = Image.open("image/logo-1.png")
+
 
 st.set_page_config(
-    page_title="Streamlit App",
-    page_icon="🧊",
+    page_title="Kogga",
+    page_icon=im,
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -20,9 +24,8 @@ with open( "style.css" ) as css:
 
 st.markdown(f"""
     <header class="navbar st-emotion-cache-12fmjuu ezrtsby2">
-        <a class="navbar-brand" href="#" id="nav-a">
+        <a class="logo-image" href="#" id="nav-a">
             <img src="data:image/png;base64,{encoded_logo}" alt="logo" />
-            <span>YOUR SAAS</span>
         </a>
         <a href="/login" target="_self" class="login-button">Login</a>
         <a href="/signup" target="_self" class="signup-button">Sign Up</a>
@@ -113,4 +116,5 @@ with col3n:
             st.markdown("""<p>Advance ML with our pre-trained model hub.</p>""", unsafe_allow_html=True)
         with col2ns:
             st.image(researcher)
+    
 

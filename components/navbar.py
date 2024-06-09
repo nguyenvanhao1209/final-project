@@ -1,6 +1,10 @@
 import streamlit as st
+import base64
 
 
+logo_path = r'image/logo-no-background.png'
+with open(logo_path, "rb") as image_file:
+    encoded_logo = base64.b64encode(image_file.read()).decode('utf-8')
 
 class Navbar:
     def navbar():
@@ -20,8 +24,10 @@ class Navbar:
             <body>
             
             
-            <header class="navbar st-emotion-cache-12fmjuu ezrtsby2">
-                <img src="https://flowbite.com/docs/images/logo.svg" class="logo-image" alt="Flowbite Logo">           
+            <header class="navbar-home st-emotion-cache-12fmjuu ezrtsby2">
+                <a class="logo-image" href="#" id="nav-a">
+                    <img src="data:image/png;base64,{encoded_logo}" alt="logo" />
+                </a>         
                 <form class="search-form" action="" style="margin:auto;max-width:800px">
                     <input type="text" placeholder="     Search..." name="search2" />
                     <button type="submit"><i class="fa fa-search"></i></button>

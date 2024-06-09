@@ -10,9 +10,13 @@ from services.google_login import get_logged_in_user_email
 from pygwalker.api.streamlit import StreamlitRenderer
 import pandas as pd
 
+
+im = Image.open("image/logo-1.png")
+
+
 st.set_page_config(
-    page_title="Streamlit App",
-    page_icon="🧊",
+    page_title="Kogga: Your home for Machine Learning",
+    page_icon=im,
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -69,14 +73,11 @@ def main():
                 "nav-link": {"font-size": "15px", "text-align": "left", "margin": "0px",
                              "--hover-color": "#eee"},
             })
+        st.sidebar.markdown("---")
+        st.markdown("#### Upload your data ####")
+        file = st.file_uploader("", type=["csv", "xlsx", "xls"])
 
     with st.container():
-        
-        with st.sidebar:
-            st.sidebar.markdown("---")
-            st.markdown("#### Upload your data ####")
-            file = st.file_uploader("", type=["csv", "xlsx", "xls"])
-
         if file is not None:
 
             data = load_data(file)
