@@ -14,18 +14,18 @@ body,
   font-family: "Segoe UI", sans-serif;
 }
 
-#MainMenu {
+/* #MainMenu {
   visibility: hidden;
-}
+} */
 footer {
   visibility: hidden;
 }
 
-.stApp header {
+/* .stApp header {
   z-index: 99999999999;
   background: #f0f2f6;
   height: 4rem;
-}
+} */
 .st-d4.st-b8.st-d5 {
   width: 30%;
 }

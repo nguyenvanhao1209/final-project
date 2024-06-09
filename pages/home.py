@@ -50,7 +50,7 @@ def get_current_login():
     with col1:
         st.markdown(f"### {auth_instance.LoginUser().name}")
     with col2:
-        if st.button('Logout', type='primary'):
+        if st.button('Logout', type='primary', use_container_width=True):
             logout()
 
 def logout():

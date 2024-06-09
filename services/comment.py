@@ -34,3 +34,19 @@ def list_comment(post_id):
     comment_list = sorted(comment_list, key=lambda comment: comment.datetime, reverse=True)
     return comment_list
 
+def get_user_comment(user_id, post_id):
+    comments = db.collection('comments').where('user.id', '==', user_id).where('post.id', '==', post_id).stream()
+
+    for comment in comments:
+        comment_dict = comment.to_dict()
+        comment_dict['user'] = User(**comment_dict['user'])
+        comment_dict['post'] = Post(**comment_dict['post'])
+        return Comment(**comment_dict)
+
+def delete_comment(user_id, post_id):
+    comments = db.collection('comments').where('user.id', '==', user_id).where('post.id', '==', post_id).stream()
+
+    for comment in comments:
+        # Delete the vote
+        db.collection('comments').document(comment.id).delete()
+
