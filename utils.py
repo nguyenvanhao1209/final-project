@@ -1,6 +1,8 @@
 import base64
 import json
 from datetime import datetime
+import streamlit as st
+from streamlit_star_rating import st_star_rating
 
 def get_name_email(token):
     # Split the token into its three parts: header, payload, and signature
@@ -116,3 +118,36 @@ def calculate_file_size(number, size_type):
 
     return size_in_bits
 
+def display_vote_detail(values, point, total):
+    # Inject Tailwind CSS
+    st.markdown("""
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        """, unsafe_allow_html=True)
+
+    # Create a custom progress bar with Tailwind CSS matching the uploaded image
+    def custom_progress_bar(label, value, max_value=total):
+        st.markdown(f"""
+        <div class="flex items-center mb-4">
+            <div class="w-16 text-right mr-4 text-xs">{label}</div>
+            <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div class="bg-yellow-300 h-full rounded-full" style="width: {value/max_value*100}%"></div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns([1,3])
+    with col1:
+        st.markdown(f"""
+            <div class="text-left text-8xl" style="margin-top: -10px;">
+                {point}
+            </div>
+            """, unsafe_allow_html=True)
+        st_star_rating(label="", maxValue=5, defaultValue=point, key="rating", size=20, read_only=True)
+        st.markdown(f"""
+            <div class="text-justify text-base font-semibold" style="margin-top: -10px;">
+                {total} reviews
+            </div>
+            """, unsafe_allow_html=True)
+    with col2:
+        for i, value in enumerate(values, 1):
+            custom_progress_bar(str(6 - i), value)

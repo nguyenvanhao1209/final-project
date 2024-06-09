@@ -42,7 +42,7 @@ def create_chart(data):
 
 def get_current_login():
     auth_instance = get_logged_in_user_email()
-    col1, col2 = st.columns([3,1])
+    col1, col2 = st.columns([2,1])
     with col1:
         st.markdown(f"### {auth_instance.LoginUser().name}")
     with col2:
