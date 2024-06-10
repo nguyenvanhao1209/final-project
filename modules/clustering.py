@@ -8,8 +8,6 @@ import plotly.graph_objects as go
 from PIL import Image
 
 
-
-
 def get_result(model, X, X_scaled, feature_columns):
     # Add cluster labels to the data
     try:
@@ -231,7 +229,7 @@ class Clustering:
             # Add cluster labels to the data
             get_result(optics, X, X_scaled, feature_columns)
 
-    def meanshift(data):
+    def meanshift_clustering(data):
         # Create a copy of the data
         X_scaled, X, feature_columns = pre_train(data)
 
@@ -298,4 +296,4 @@ class Clustering:
         if class_type == "OPTICS":
             Clustering.optics_clustering(edit_data)
         if class_type == "Mean Shift":
-            Clustering.meanshift(edit_data)
+            Clustering.meanshift_clustering(edit_data)
