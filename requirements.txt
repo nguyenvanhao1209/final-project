@@ -69,7 +69,7 @@ jsonschema==4.21.1
 jsonschema-specifications==2023.12.1
 jupyterlab_widgets==3.0.10
 jwcrypto==1.5.6
-kanaries_track==0.0.3
+kanaries_track==0.0.2
 kiwisolver==1.4.5
 lxml==5.1.0
 Markdown==3.6
