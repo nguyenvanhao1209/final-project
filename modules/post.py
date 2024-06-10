@@ -1,20 +1,21 @@
 import streamlit as st
-from services.comment import create_comment, list_comment
+from services.comment import create_comment, list_comment, delete_comment
 from datetime import datetime
 from local_components import card_container
 from services.post import list_post, create_post, update_post, delete_post, search_post_by_title, search_post_by_file_type, search_post_by_file_size, update_downloaded
 from pygwalker.api.streamlit import StreamlitRenderer
 import requests
 from io import BytesIO
-from utils import time_difference, format_file_size, get_file_extension, calculate_file_size
+from utils import time_difference, format_file_size, get_file_extension, calculate_file_size, display_vote_detail
 import zipfile
 import io
 from utils import get_file
 from PIL import Image
 import pandas as pd
 from services.google_login import get_logged_in_user_email
-from services.vote import create_vote, count_vote, is_voted, delete_vote
+from services.vote import create_vote, get_point_vote, is_voted, delete_vote, change_vote, get_vote_user, get_vote_counts, get_total_votes
 import time
+from streamlit_star_rating import st_star_rating
 
 @st.experimental_fragment
 def download_files_as_zip(post):
@@ -45,32 +46,35 @@ def download_files_as_zip(post):
             st.session_state[f'has_updated_{post.id}'] = True
             update_downloaded(post.id)
 
-def change_vote(vote, auth_instance, post):
-    if vote == True:
-        delete_vote(auth_instance.LoginUser().id, post.id)
-    else:
-        create_vote(auth_instance.LoginUser(), post, 1)
-
-@st.experimental_fragment
-def handle_vote(auth_instance, post):
-    def on_vote_change():
-        change_vote(is_voted(auth_instance.LoginUser().id, post.id), auth_instance, post)
-
-    vote = st.toggle(f"{count_vote(post.id)} votes", value=is_voted(auth_instance.LoginUser().id, post.id), key=f"vote {auth_instance.LoginUser().id}, {post.id}", on_change=on_vote_change)
-
 @st.experimental_fragment
 def handle_comment(post, auth_instance):
-    new_comment = st.chat_input("Write a comment")
-
-    if new_comment:  # If the text input is not empty
-        create_comment(new_comment, auth_instance.LoginUser(), datetime.now(), post)
-
+    if is_voted(auth_instance.LoginUser().id, post.id) == False:
+        placeholder = st.empty()
+        container = placeholder.container(height=200, border=False)
+        with container:
+            vote_point = st_star_rating("", maxValue=5,defaultValue=0,size=30,customCSS = "div {padding-left:25px; height: 60px;}")
+            new_comment = st.chat_input("Write a comment")
+        if new_comment and vote_point:
+            create_vote(auth_instance.LoginUser(), post, vote_point)
+            create_comment(new_comment, auth_instance.LoginUser(), datetime.now(), post)
+            placeholder.empty()
+    else:
+        pass
+    
+    if get_total_votes(post.id):
+        st.markdown("""<h1 style="position: relative; top: -15px;">Ratings and comments</h1>""", unsafe_allow_html=True)
+        display_vote_detail(get_vote_counts(post.id), get_point_vote(post.id), get_total_votes(post.id))
 
     comments = list_comment(post.id)
 
     for comment in comments:
-        with card_container(key="dataset-card"):
-            st.write(f"#### {comment.user.name} - {time_difference(comment.datetime.strftime('%Y-%m-%d %H:%M:%S'))}")
+        with st.container(height=150, border=True):
+            st.write(f"## {comment.user.name}")
+            col1, col2 = st.columns([1,3])
+            with col1:
+                st_star_rating("", maxValue=5, defaultValue=get_vote_user(auth_instance.LoginUser().id, post.id), size=20, read_only=True, key=f"vote{auth_instance.LoginUser().id}{post.id}")
+            with col2:
+                st.markdown(f"""<div style="margin-top:5px;">{time_difference(comment.datetime.strftime('%Y-%m-%d %H:%M:%S'))}</div>""", unsafe_allow_html=True)
             st.write(f"{comment.content}")
 class Post:
     def all_post():
@@ -180,11 +184,15 @@ class Post:
                     with col1:
                         st.markdown(f"<small>Updated {time_difference(post.datetime.strftime('%Y-%m-%d %H:%M:%S'))}</small>", unsafe_allow_html=True)
                     with col2:
-                        st.write(f"{count_vote(post.id)}❤️")
+                        if get_point_vote(post.id) != 0.0:
+                            st.write(f"{get_point_vote(post.id)}⭐")
+                        else:
+                            pass
                     with col3:
-                        st.write(f"{post.downloaded}⬇️")
-
-                    
+                        if post.downloaded != 0:
+                            st.write(f"{post.downloaded}⬇️")
+                        else:
+                            pass
 
                     btncol1, btncol2, btncol3 = st.columns(3)
                     with btncol1:
@@ -206,16 +214,13 @@ class Post:
     @st.experimental_dialog("Detail post", width="large")
     def detail_post(post):
         auth_instance = get_logged_in_user_email()
-        col1d, col2d, col3d = st.columns([2, 1, 1])
+        col1d, col2d = st.columns([3, 1])
         with col1d:
             st.write(f"### Detail {post.title}")
         with col2d:
-            handle_vote(auth_instance, post)
-
-        with col3d:
             download_files_as_zip(post)
 
-        with card_container(key="content"):
+        with st.container(border=True):
             st.write("#### About dataset")
             st.write(f"{post.content}")
         auth_instance = get_logged_in_user_email()
@@ -252,15 +257,18 @@ class Post:
             image = st.file_uploader("Upload a image")
             submitted = st.form_submit_button("Submit", type="primary")
             if submitted:
-                create_post(
-                    title,
-                    content,
-                    auth_instance.LoginUser(),
-                    datetime.now(),
-                    files,
-                    image,
-                )
-                st.rerun()
+                if title and content and files:
+                    create_post(
+                        title,
+                        content,
+                        auth_instance.LoginUser(),
+                        datetime.now(),
+                        files,
+                        image,
+                    )
+                    st.rerun()
+                else:
+                    st.error("Title, content, and files are required.")
 
     @st.experimental_dialog("Update post", width="large")
     def update_post(post):

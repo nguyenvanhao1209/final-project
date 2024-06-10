@@ -9,7 +9,8 @@ from authentication import Auth
 from services.google_login import get_logged_in_user_email
 from pygwalker.api.streamlit import StreamlitRenderer
 import pandas as pd
-
+from utils import image_with_name
+from st_click_detector import click_detector
 
 im = Image.open("image/logo-1.png")
 
@@ -46,12 +47,16 @@ def create_chart(data):
 
 def get_current_login():
     auth_instance = get_logged_in_user_email()
-    col1, col2 = st.columns([2,1])
+    col1, col2 = st.columns([1,3])
     with col1:
-        st.markdown(f"### {auth_instance.LoginUser().name}")
+        content = f"""
+            <a href='#' id='Image 1'><img width='70%' src='{image_with_name("Hao")}'></a>
+        """
+        clicked = click_detector(content)
+        if clicked:
+            st.write("abcd")
     with col2:
-        if st.button('Logout', type='primary'):
-            logout()
+        st.markdown(f"### {auth_instance.LoginUser().name}")
 
 def logout():
     Auth.logout()

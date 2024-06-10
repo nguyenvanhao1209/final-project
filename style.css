@@ -21,7 +21,7 @@ footer {
   visibility: hidden;
 }
 
-/* .stApp header {
+.stApp header {
   z-index: 99999999999;
   background: #f0f2f6;
   height: 4rem;

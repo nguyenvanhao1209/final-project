@@ -7,6 +7,7 @@ class User:
     id: str
     name: str
     email: str
+    image: str = None
 
 @dataclass
 class Post:
