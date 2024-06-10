@@ -19,27 +19,26 @@ class Footer:
                         <img src="data:image/png;base64,{encoded_logo}" alt="logo" />
                     </div>
                     <div class="footer-social">
-                        <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="https://twitter.com" target="_blank"><i class="fa-brands fa-github"></i></a>
                         <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                         <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
                     </div>
                 </div>
                 <div class="footer-column">
                     <h4>Product</h4>
-                    <a href="#">Competitions</a>
-                    <a href="#">Datasets</a>
-                    <a href="#">Models</a>
-                    <a href="#">Notebooks</a>
-                    <a href="#">Learn</a>
-                    <a href="#">Discussions</a>
+                    <a href="#">Statistic</a>
+                    <a href="#">Visualization</a>
+                    <a href="#">Regression</a>
+                    <a href="#">Classification</a>
+                    <a href="#">Clustering</a>
                 </div>
                 <div class="footer-column">
                     <h4>Documentation</h4>
-                    <a href="#">Competitions</a>
-                    <a href="#">Datasets</a>
-                    <a href="#">Models</a>
-                    <a href="#">Notebooks</a>
-                    <a href="#">Public API</a>
+                    <a href="https://docs.streamlit.io/">Streamlit</a>
+                    <a href="https://pandas.pydata.org/docs/">Pandas</a>
+                    <a href="https://scikit-learn.org/stable/api/index.html">Scikit-learn</a>
+                    <a href="https://dash.plotly.com/">Plotly</a>
+                    <a href="https://docs.scipy.org/doc/scipy/">SciPy</a>
                 </div>
                 <div class="footer-column">
                     <h4>Company</h4>

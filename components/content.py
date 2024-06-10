@@ -92,7 +92,7 @@ class Content:
     def content():
         st.balloons()
         user = get_logged_in_user_email()
-        st.markdown(f" ##### Welcome to kogga, {user.LoginUser().name}!")
+        st.markdown(f" ##### Welcome to kogga {user.LoginUser().name}!")
         st.markdown(
         """
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
