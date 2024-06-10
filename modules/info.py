@@ -23,6 +23,7 @@ from streamlit_shadcn_ui import slider, input, textarea, radio_group, switch
 class Info:
 
     def info(data):
+        data_copy = data.copy()
         content_image = Image.open("image/content1.png")
         col1, col2 = st.columns([5,1])
         with col1:
@@ -64,18 +65,18 @@ class Info:
 
         with col1:
             st.write("Columns: ")
-            st.dataframe(data.columns, use_container_width=True)
+            st.dataframe(data_copy.columns, use_container_width=True)
 
         with col2:
             st.write("Data types: ")
-            st.dataframe(data.dtypes, use_container_width=True)
+            st.dataframe(data_copy.dtypes, use_container_width=True)
 
         with col3:
             st.write("Unique Values: ")
-            st.dataframe(data.nunique(), use_container_width=True)
+            st.dataframe(data_copy.nunique(), use_container_width=True)
         with col4:
             st.markdown("Missing Values: ")
-            st.dataframe(data.isnull().sum(), use_container_width=True)
+            st.dataframe(data_copy.isnull().sum(), use_container_width=True)
 
         
         

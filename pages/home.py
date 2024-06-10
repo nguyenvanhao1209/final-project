@@ -22,7 +22,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-from modules import Chart, Info, Statistic , Regression, Classification, Clustering, Post
+from modules import Visualization, Info, Statistic , Regression, Classification, Clustering, Post, Decomposition
 from components import Navbar, Footer, Content
 
 with open( "style.css" ) as css:
@@ -38,23 +38,20 @@ def load_data(file):
     elif file_extension in ['.xlsx', '.xls']:
         return pd.read_excel(file)
 
-
-#### Data visualization
-def create_chart(data):
-    pyg_app = StreamlitRenderer(data)
-    pyg_app.explorer()
-    
+@st.experimental_dialog("Profile")
+def show_profile():
+    st.write("fuck")
 
 def get_current_login():
     auth_instance = get_logged_in_user_email()
     col1, col2 = st.columns([1,3])
     with col1:
         content = f"""
-            <a href='#' id='Image 1'><img width='70%' src='{image_with_name("Hao")}'></a>
+            <a href='#' id='Image 1'><img width='70%' src='{image_with_name(auth_instance.LoginUser().name)}'></a>
         """
         clicked = click_detector(content)
         if clicked:
-            st.write("abcd")
+            show_profile()
     with col2:
         st.markdown(f"### {auth_instance.LoginUser().name}")
 
@@ -70,8 +67,8 @@ def main():
            
         st.sidebar.markdown("---")
         st.markdown("#### Select options ####")
-        selected = option_menu(None, ["Infomation", "Statistic", "Visualization", "Regression", "Classification", "Clustering", "Datasets"],
-                               icons=['clipboard-data', 'table', "bar-chart-fill", 'rulers', 'diamond-half', 'bi-exclude','database'],
+        selected = option_menu(None, ["Infomation", "Statistic", "Visualization", "Decomposition", "Regression", "Classification", "Clustering", "Datasets"],
+                               icons=['clipboard-data', 'table', "bar-chart-fill","grid-1x2-fill" , 'rulers', 'diamond-half', 'bi-exclude','database'],
                                menu_icon="cast", default_index=0, styles={
                 "st": {"padding": "5!important", "background-color": "#fafafa"},
                 "icon": {"color": "black", "font-size": "15px"},
@@ -94,19 +91,10 @@ def main():
                 Statistic.analyze_data(data)
 
             if selected == 'Visualization':
-                content_image = Image.open("image/content2.png")
-                col1, col2 = st.columns([3,1])
-                with col1:
-                    st.markdown(" # Visualization # ")
-                    st.markdown("""<p>Easy to visualize your data with drag and drop</p>""", unsafe_allow_html=True)
-                with col2:
-                    st.image(content_image)
-                st.markdown("---")
-                st.write("#### Your data ####")
-                with st.expander("See data", expanded=True):
-                    edit_data = st.data_editor(data, use_container_width=True, num_rows="dynamic")
-                create_chart(edit_data)
-                st.markdown("---")
+                Visualization.run(data)
+            
+            if selected == 'Decomposition':
+                Decomposition.run(data)
 
             if selected == 'Regression':
                 Regression.run(data)
