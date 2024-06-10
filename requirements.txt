@@ -69,7 +69,7 @@ jsonschema==4.21.1
 jsonschema-specifications==2023.12.1
 jupyterlab_widgets==3.0.10
 jwcrypto==1.5.6
-kanaries_track==0.0.2
+kanaries_track==0.0.4
 kiwisolver==1.4.5
 lxml==5.1.0
 Markdown==3.6
@@ -110,13 +110,13 @@ pygwalker==0.4.8
 PyJWT==2.8.0
 pymdown-extensions==10.7.1
 pyparsing==3.1.2
-Pyrebase4==4.7.1
+Pyrebase4==4.8.0
 python-dateutil==2.9.0.post0
 python-jwt==4.1.0
 pytz==2024.1
 PyYAML==6.0.1
 referencing==0.33.0
-requests>=2.19.1,<2.30
+requests>=2.19.1
 requests-toolbelt==0.10.1
 rich==13.7.1
 rpds-py==0.18.0
