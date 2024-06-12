@@ -1,9 +1,11 @@
 import streamlit as st
 import pandas as pd
 from PIL import Image
-import pandas as pd
+import numpy as np
 import math
 from local_components import card_container
+import scipy.stats as stats
+import plotly.graph_objects as go
 
 def summary(df):
     summary = df.describe()
@@ -155,6 +157,54 @@ class Statistic:
                 skewness = series4.skew()
                 if input4:
                     st.markdown(f"Skewness: <span style='color:green;'>{skewness}</span>", unsafe_allow_html=True)
-                        
+        st.markdown("---")
+        st.markdown("###### Q-Q Testing ######")
+        data_copy = data.copy()
+        data_number_colum = data_copy.select_dtypes(include=["int", "float"]).columns
+        column = st.selectbox("Select a Column", data_number_colum)
+        sort_col = data[column].sort_values().reset_index(drop=True)
+
+        # Calculate z-scores for the selected column
+        z_scores = (sort_col.index + 1 - 0.5) / len(data[column])
+
+        # Generate theoretical quantiles
+        quantiles = np.linspace(sort_col[0], sort_col[5], len(data[column]))
+        theoretical_quantiles = stats.norm.ppf(z_scores)
+
+        # Create the QQ plot
+        qq_fig = go.Figure()
+        qq_fig.add_trace(go.Scatter(x=sort_col, y=theoretical_quantiles, mode="markers", name="QQ Plot"))
+
+        # Add linear regression line
+        slope, intercept, _, _, _ = stats.linregress(sort_col, theoretical_quantiles)
+        regression_line = intercept + slope * sort_col
+        qq_fig.add_trace(go.Scatter(x=sort_col, y=regression_line, mode="lines", name="Linear",line=dict(color='red')))
+
+        qq_fig.update_layout(
+            title=f"Q-Q Plot chart",
+            xaxis_title="Sample Quantiles",
+            yaxis_title="Theoretical Quantiles",
+        )
+        
+        # Display the QQ plot
+        col1_qq, col2_qq = st.columns(2)
+        with col1_qq:
+            st.container().plotly_chart(qq_fig,theme = None, use_container_width=True)
+        with col2_qq:
+            coef_matrix = np.corrcoef(sort_col, theoretical_quantiles)
+            fig = go.Figure(data=go.Heatmap(
+                   z=coef_matrix,
+                   x=['Sample', 'Theoretical'],  # Labels for x-axis
+                   y=['Sample', 'Theoretical'],  # Labels for y-axis
+                   colorscale='burgyl'))
+
+            # Add title and labels
+            fig.update_layout(
+                title='Correlation Matrix Heatmap',
+                xaxis_nticks=36
+            )
+
+            # Show the figure
+            st.container().plotly_chart(fig,theme = None, use_container_width=True)    
         
         
