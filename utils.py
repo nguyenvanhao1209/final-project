@@ -155,11 +155,11 @@ def display_vote_detail(values, point, total):
         for i, value in enumerate(values, 1):
             custom_progress_bar(str(6 - i), value)
 
-def image_with_name(name):
+def image_with_name(name, size):
     param = {
         "name": name,
         "rounded": True,
-        "size": 45
+        "size": size
     }
 
     url = requests.Request('GET', 'https://ui-avatars.com/api/', params=param).prepare().url

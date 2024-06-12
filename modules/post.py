@@ -72,7 +72,7 @@ def handle_comment(post, auth_instance):
             st.write(f"## {comment.user.name}")
             col1, col2 = st.columns([1,3])
             with col1:
-                st_star_rating("", maxValue=5, defaultValue=get_vote_user(auth_instance.LoginUser().id, post.id), size=20, read_only=True, key=f"vote{auth_instance.LoginUser().id}{post.id}")
+                st_star_rating("", maxValue=5, defaultValue=get_vote_user(auth_instance.LoginUser().id, post.id), size=20, read_only=True, key=f"vote{comment.user.id}{post.id}")
             with col2:
                 st.markdown(f"""<div style="margin-top:5px;">{time_difference(comment.datetime.strftime('%Y-%m-%d %H:%M:%S'))}</div>""", unsafe_allow_html=True)
             st.write(f"{comment.content}")
