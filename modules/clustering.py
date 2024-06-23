@@ -42,21 +42,24 @@ def pre_train(data):
 
     data_number_columns = data_copy.select_dtypes(include=["int", "float"]).columns
     feature_columns = st.multiselect("Select feature columns", data_number_columns)
-    X = data_copy[feature_columns]
+    
 
     if not feature_columns:
         st.container().warning("Please select feature columns")
         return None, None, None
     else:
-        scaler_type = st.selectbox("Select scale type", ("None", "Standard Scaler", "Min-max Scaler"))
-        if scaler_type == "None":
+        scaler_type = st.selectbox('Select scale type',('None', 'Standard Scaler', 'Min-max Scaler'))
+        # Split the data into training and testing sets
+        X = data_copy[feature_columns]
+        X_scaled = X.copy()
+        standardScaler = StandardScaler()
+        minMaxScaler = MinMaxScaler()
+        if scaler_type == 'None':
             X_scaled = X
-        if scaler_type == "Standard Scale":
-            scaler = StandardScaler()
-            X_scaled = scaler.fit_transform(X)
-        if scaler_type == "Min-max Scale":
-            scaler = MinMaxScaler()
-            X_scaled = scaler.fit_transform(X)
+        elif scaler_type == 'Standard Scaler':
+            X_scaled = standardScaler.fit_transform(X)
+        elif scaler_type == 'Min-max Scaler':
+            X_scaled = minMaxScaler.fit_transform(X)
         return X_scaled, X, feature_columns
 
 
@@ -104,7 +107,7 @@ class Clustering:
                 "random_state": random_state,
                 "algorithm": algorithm,
             }
-
+          
             kmeans = KMeans()
             kmeans.set_params(**params)
             kmeans.fit(X_scaled)
