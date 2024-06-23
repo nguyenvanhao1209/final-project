@@ -6,6 +6,7 @@ from streamlit_star_rating import st_star_rating
 import requests
 from PIL import Image
 from io import BytesIO
+import streamlit.components.v1 as components
 
 def get_name_email(token):
     # Split the token into its three parts: header, payload, and signature
@@ -121,6 +122,59 @@ def calculate_file_size(number, size_type):
 
     return size_in_bits
 
+def display_star_rating(score):
+    # Function to generate star ratings with Tailwind CSS
+    def generate_star_html(score):
+        tailwind_css = '''
+        <style>
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css');
+        .star {
+            color: #fbbf24; /* Tailwind amber-400 color */
+            font-size: 2rem;
+            display: inline-block;
+            position: relative;
+        }
+        .star::before {
+            content: '★';
+            color: #e5e7eb; /* Tailwind gray-300 color for empty star */
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 0;
+        }
+        .star.full::before {
+            color: #fbbf24; /* Tailwind amber-400 color for full star */
+            z-index: 1;
+        }
+        .star.half::before {
+            background: linear-gradient(90deg, #fbbf24 50%, #e5e7eb 50%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            z-index: 1;
+        }
+        </style>
+        '''
+
+        stars_html = '<div class="flex">'
+        full_stars = int(score)
+        half_star = (score - full_stars) >= 0.5
+        empty_stars = 5 - full_stars - int(half_star)
+
+        stars_html += ''.join('<div class="star full">★</div>' for _ in range(full_stars))
+        if half_star:
+            stars_html += '<div class="star half">★</div>'
+        stars_html += ''.join('<div class="star">★</div>' for _ in range(empty_stars))
+
+        stars_html += '</div>'
+
+        return tailwind_css + stars_html
+
+    # Generate the star HTML
+    star_html = generate_star_html(score)
+
+    # Display the stars using components
+    components.html(star_html, height=40)
+
 def display_vote_detail(values, point, total):
     # Inject Tailwind CSS
     st.markdown("""
@@ -145,7 +199,7 @@ def display_vote_detail(values, point, total):
                 {point}
             </div>
             """, unsafe_allow_html=True)
-        st_star_rating(label="", maxValue=5, defaultValue=point, key="rating", size=20, read_only=True)
+        display_star_rating(point)
         st.markdown(f"""
             <div class="text-justify text-base font-semibold" style="margin-top: -10px;">
                 {total} reviews

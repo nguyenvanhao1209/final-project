@@ -16,6 +16,7 @@ from services.google_login import get_logged_in_user_email
 from services.vote import create_vote, get_point_vote, is_voted, delete_vote, change_vote, get_vote_user, get_vote_counts, get_total_votes
 import time
 from streamlit_star_rating import st_star_rating
+import streamlit_shadcn_ui as ui
 
 @st.experimental_fragment
 def download_files_as_zip(post):
@@ -52,7 +53,8 @@ def handle_comment(post, auth_instance):
         placeholder = st.empty()
         container = placeholder.container(height=200, border=False)
         with container:
-            vote_point = st_star_rating("", maxValue=5,defaultValue=0,size=30,customCSS = "div {padding-left:25px; height: 60px;}")
+            st.markdown("""<h1 style="position: relative; top: -15px;">Create your rating</h1>""", unsafe_allow_html=True)
+            vote_point = st_star_rating("", maxValue=5,defaultValue=0,size=30,customCSS = "div {padding-left:100px; height: 60px;}")
             new_comment = st.chat_input("Write a comment")
         if new_comment and vote_point:
             create_vote(auth_instance.LoginUser(), post, vote_point)
@@ -62,7 +64,7 @@ def handle_comment(post, auth_instance):
         pass
     
     if get_total_votes(post.id):
-        st.markdown("""<h1 style="position: relative; top: -15px;">Ratings and comments</h1>""", unsafe_allow_html=True)
+        st.markdown("""<h1 style="position: relative; top: -20px;">Ratings and comments</h1>""", unsafe_allow_html=True)
         display_vote_detail(get_vote_counts(post.id), get_point_vote(post.id), get_total_votes(post.id))
 
     comments = list_comment(post.id)
@@ -72,7 +74,7 @@ def handle_comment(post, auth_instance):
             st.write(f"## {comment.user.name}")
             col1, col2 = st.columns([1,3])
             with col1:
-                st_star_rating("", maxValue=5, defaultValue=get_vote_user(auth_instance.LoginUser().id, post.id), size=20, read_only=True, key=f"vote{comment.user.id}{post.id}")
+                st_star_rating("", maxValue=5, defaultValue=get_vote_user(comment.user.id, post.id), size=20, read_only=True, key=f"vote{comment.user.id}{post.id}")
             with col2:
                 st.markdown(f"""<div style="margin-top:5px;">{time_difference(comment.datetime.strftime('%Y-%m-%d %H:%M:%S'))}</div>""", unsafe_allow_html=True)
             st.write(f"{comment.content}")
@@ -196,19 +198,15 @@ class Post:
 
                     btncol1, btncol2, btncol3 = st.columns(3)
                     with btncol1:
-                        if st.button(f"Detail", type="primary", key=f"Detail {post.title}", use_container_width=True):
+                        if ui.button("🔍", key=f"Detail {post.id}", class_name="text-white bg-red-500 font-bold w-10 h-10 py-2 px-2 rounded-full"):
                             Post.detail_post(post)
                     with btncol2:
                         if post.author.name == auth_instance.LoginUser().name:
-                            if st.button(
-                                f"Update", type="primary", key=f"Update {post.title}", use_container_width=True
-                            ):
+                            if ui.button("🔄", key=f"Update {post.id}", class_name="text-white bg-red-500 font-bold w-10 h-10 py-2 px-2 rounded-full"):
                                 Post.update_post(post)
                     with btncol3:
                         if post.author.name == auth_instance.LoginUser().name:
-                            if st.button(
-                                f"Delete", type="primary", key=f"Delete {post.title}", use_container_width=True
-                            ):
+                            if ui.button("✖️", key=f"Delete {post.id}", class_name="text-white bg-red-500 font-bold w-10 h-10 py-2 px-2 rounded-full"):
                                 Post.delete_post(post)
 
     @st.experimental_dialog("Detail post", width="large")

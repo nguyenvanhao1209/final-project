@@ -141,6 +141,8 @@ def train_test(X, y):
         Controls the shuffling applied to the data before applying the split. Pass an int for reproducible output across multiple function calls.
         """
         random_state = st.number_input("Choose random state", value=None, help=text_random_state)
+        if random_state is not None:
+            random_state = int(random_state)
         text_stratify = """
         ### stratify: array-like, default=None
         If not None, data is split in a stratified fashion, using this as the class labels.
