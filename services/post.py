@@ -102,9 +102,11 @@ def search_post_by_title(title):
 
 def search_post_by_file_type(posts, type_list):
     result = []
+    seen_ids = set()
     for post in posts:
         for file in post.files:
-            if get_file_extension(file) in type_list:
+            if get_file_extension(file) in type_list and post.id not in seen_ids:
+                seen_ids.add(post.id)
                 result.append(post)
     return result
 
@@ -119,6 +121,13 @@ def search_post_by_file_size(posts, min_size, max_size):
             )
             file_sizes += int(file_size)
         if min_size <= file_sizes <= max_size:
+            result.append(post)
+    return result
+
+def get_user_posts(posts, user_id):
+    result = []
+    for post in posts:
+        if post.author.id == user_id:
             result.append(post)
     return result
 
