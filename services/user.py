@@ -28,7 +28,7 @@ def count_posts():
 def count_user_posts(user_id):
     db = firestore.client()
 
-    user_posts_ref = db.collection('posts').where('user_id', '==', user_id)
+    user_posts_ref = db.collection('posts').where('author.id', '==', user_id)
     user_posts = user_posts_ref.get()
 
     return len(user_posts)
@@ -52,7 +52,7 @@ def count_user_votes(user_id):
 def count_comments_in_user_posts(user_id):
     db = firestore.client()
 
-    user_posts_ref = db.collection('posts').where('user_id', '==', user_id)
+    user_posts_ref = db.collection('posts').where('author.id', '==', user_id)
     user_posts = user_posts_ref.get()
 
     total_comments = 0

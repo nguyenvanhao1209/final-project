@@ -2,7 +2,7 @@ import streamlit as st
 from services.comment import create_comment, list_comment, delete_comment
 from datetime import datetime
 from local_components import card_container
-from services.post import list_post, create_post, update_post, delete_post, search_post_by_title, search_post_by_file_type, search_post_by_file_size, update_downloaded
+from services.post import list_post, create_post, update_post, delete_post, search_post_by_title, search_post_by_file_type, search_post_by_file_size, update_downloaded, get_user_posts
 from pygwalker.api.streamlit import StreamlitRenderer
 import requests
 from io import BytesIO
@@ -108,12 +108,15 @@ class Post:
                 with cols2:
                     size_type_max = st.selectbox("Max size type", ['kB', 'MB', 'GB'], label_visibility="collapsed")
                 selected_file_types_final = []
-                min_file_size = None
-                max_file_size = None
+                min_file_size = 0
+                max_file_size = 0
+                my_data = False
                 if calculate_file_size(min_size, size_type_min) > calculate_file_size(max_size, size_type_max):
                     st.warning("Invalid file size range entered")
                 else:
                     colvui, colap, colcl = st.columns([5,1,1])
+                    with colvui:
+                        my_data = st.toggle("My posts", value=False, key="get_my_posts")
                     with colap:
                         if st.button("Apply"):
                             selected_file_types_final = selected_file_types
@@ -122,8 +125,8 @@ class Post:
                     with colcl:
                         if st.button("Clear"):
                             selected_file_types_final = []
-                            min_file_size = None
-                            max_file_size = None
+                            min_file_size = 0
+                            max_file_size = 0
 
         st.markdown("---")
         if search_text == "":
@@ -134,8 +137,11 @@ class Post:
         if selected_file_types_final:
             posts = search_post_by_file_type(posts, selected_file_types_final)
 
-        if min_file_size is not None and max_file_size is not None:
+        if min_file_size != 0 or max_file_size != 0:
             posts = search_post_by_file_size(posts, min_file_size, max_file_size)
+
+        if my_data:
+            posts = get_user_posts(posts, auth_instance.LoginUser().id)
 
 
         # Create a list to hold the columns
@@ -198,15 +204,15 @@ class Post:
 
                     btncol1, btncol2, btncol3 = st.columns(3)
                     with btncol1:
-                        if ui.button("🔍", key=f"Detail {post.id}", class_name="text-white bg-red-500 font-bold w-10 h-10 py-2 px-2 rounded-full"):
+                        if ui.button("🔍", key=f"Detail {post.id}", class_name="text-white bg-slate-200 font-bold w-10 h-10 py-2 px-2 rounded-full"):
                             Post.detail_post(post)
                     with btncol2:
                         if post.author.name == auth_instance.LoginUser().name:
-                            if ui.button("🔄", key=f"Update {post.id}", class_name="text-white bg-red-500 font-bold w-10 h-10 py-2 px-2 rounded-full"):
+                            if ui.button("🔄", key=f"Update {post.id}", class_name="text-white bg-slate-200 font-bold w-10 h-10 py-2 px-2 rounded-full"):
                                 Post.update_post(post)
                     with btncol3:
                         if post.author.name == auth_instance.LoginUser().name:
-                            if ui.button("✖️", key=f"Delete {post.id}", class_name="text-white bg-red-500 font-bold w-10 h-10 py-2 px-2 rounded-full"):
+                            if ui.button("✖️", key=f"Delete {post.id}", class_name="text-white bg-slate-200 font-bold w-10 h-10 py-2 px-2 rounded-full"):
                                 Post.delete_post(post)
 
     @st.experimental_dialog("Detail post", width="large")
