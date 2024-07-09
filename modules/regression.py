@@ -36,7 +36,14 @@ def get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, targ
     with col1:
         st.markdown("Coefficients")
         if hasattr(model, 'intercept_'):
-            st.dataframe(pd.DataFrame({"Coefficients": [model.intercept_, model.coef_[0]]}))
+            feature_names = ['Intercept'] + [name for name in X_train.columns]
+            coefficients = [model.intercept_] + list(model.coef_)
+            
+            # Now, create the DataFrame
+            coef_df = pd.DataFrame({"Feature": feature_names, "Coefficients": coefficients})
+            
+            # Display the DataFrame
+            st.dataframe(coef_df)
 
     # Residuals Statistics\
     with col2:
@@ -47,7 +54,7 @@ def get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, targ
         for i in p_values:
             p_values_round.append("{:.3e}".format(i))
         st.dataframe(
-            pd.DataFrame({"Columns": feature_columns, "F_value": f_values, "p_values": p_values_round}).set_index(
+            pd.DataFrame({"Columns": X_train.columns, "F_value": f_values, "p_values": p_values_round}).set_index(
                 "Columns"))
     with col3:
         st.markdown("Model Summary")
@@ -100,8 +107,7 @@ def get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, targ
 
 def pre_train(data):
     data_copy = data.copy()
-    data_number_colum = data_copy.select_dtypes(include=["int", "float"]).columns
-    
+    data_number_colum = data_copy.columns
     
 
     # Select the target variable
@@ -119,6 +125,7 @@ def pre_train(data):
     X = data_copy[feature_columns]
     standardScaler = StandardScaler()
     minMaxScaler = MinMaxScaler()
+    X = pd.get_dummies(X)
     if scaler_type == 'None':
             X = X
     elif scaler_type == 'Standard Scaler':
