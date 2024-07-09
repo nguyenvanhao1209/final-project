@@ -8,7 +8,7 @@ import uuid
 
 # Initialize Firebase
 if not firebase_admin._apps:
-    cred = credentials.Certificate('streamlit-ml-f44ba64799b5.json')
+    cred = credentials.Certificate('kogga-f016c-590d8228c93e.json')
     firebase_admin.initialize_app(cred)
 
 db = firestore.client()

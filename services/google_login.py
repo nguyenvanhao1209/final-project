@@ -8,7 +8,7 @@ from utils import get_name_email
 from authentication import Auth
 import streamlit.components.v1 as components
 
-cred = credentials.Certificate("streamlit-ml-f44ba64799b5.json")
+cred = credentials.Certificate("kogga-f016c-590d8228c93e.json")
 
 try:
     firebase_admin.get_app()

@@ -3,7 +3,7 @@ import firebase_admin
 from firebase_admin import auth, exceptions, credentials, initialize_app, firestore
 from datetime import datetime
 
-cred = credentials.Certificate("streamlit-ml-f44ba64799b5.json")
+cred = credentials.Certificate("kogga-f016c-590d8228c93e.json")
 
 try:
     firebase_admin.get_app()

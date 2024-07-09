@@ -3,14 +3,14 @@ import streamlit as st
 from model import User
 
 config = {
-  "apiKey": "AIzaSyA3i-QDbnc6Qvw9Q9fZlmOdLUhR9g-z7uE",
-  "authDomain": "streamlit-ml.firebaseapp.com",
-  "projectId": "streamlit-ml",
-  "databaseURL": "https://streamlit-ml.firebaseapp.com",
-  "storageBucket": "streamlit-ml.appspot.com",
-  "messagingSenderId": "765035265901",
-  "appId": "1:765035265901:web:7debe2112496d4a1e0a464",
-  "measurementId": "G-5T0EV40LMX"
+  "apiKey": "AIzaSyBEmyCm5XFRKRza0ZFquPbamOqwemao2XU",
+  "authDomain": "kogga-f016c.firebaseapp.com",
+  "projectId": "kogga-f016c",
+  "databaseURL": "https://kogga-f016c.firebaseapp.com",
+  "storageBucket": "kogga-f016c.appspot.com",
+  "messagingSenderId": "501787704124",
+  "appId": "1:501787704124:web:49ba6123e9e6d65a8b3c39",
+  "measurementId": "G-YYJPPJ6PR4"
 }
 
 firebase = pyrebase.initialize_app(config)
