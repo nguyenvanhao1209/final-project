@@ -7,7 +7,7 @@ import uuid
 from utils import get_file_extension
 import requests
 
-cred = credentials.Certificate("streamlit-ml-f44ba64799b5.json")
+cred = credentials.Certificate("kogga-f016c-590d8228c93e.json")
 
 try:
     firebase_admin.get_app()
@@ -16,7 +16,7 @@ except ValueError as e:
 
 def create_post(title, content, author, datetime, files, image):
     db = firestore.client()
-    bucket = storage.bucket('streamlit-ml.appspot.com')
+    bucket = storage.bucket('kogga-f016c.appspot.com')
 
     file_urls = []
     for file in files:
