@@ -49,7 +49,7 @@ def get_step_image(icon, content , image, height, image_border=None, hover_effec
     st.markdown(
         f"""
         <head>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
             <style>
                 .step-image-container {{
                     text-align: center;
@@ -95,7 +95,7 @@ class Content:
         st.markdown(f" ##### Welcome to kogga {user.LoginUser().name}!")
         st.markdown(
         """
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
         <style>
         .dataset-card {
             display: flex;
