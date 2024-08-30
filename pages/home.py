@@ -132,7 +132,7 @@ def main():
 
             data = load_data(files[0])
 
-            if selected == 'Infomations':
+            if selected == 'Infomation':
                 Info.info(data)
 
             if selected == 'Statistic':
