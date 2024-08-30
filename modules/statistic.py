@@ -30,8 +30,7 @@ class Statistic:
             st.image(content_image)
         st.markdown("---")
         st.write("#### Your data ####")
-        with st.expander("See data", expanded=True):
-            edited_df = st.data_editor(data,use_container_width=True,num_rows="dynamic")
+        edited_df = st.data_editor(data,use_container_width=True,num_rows="dynamic")
 
         st.markdown("---")
         ######

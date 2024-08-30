@@ -6,6 +6,6 @@ from modules.info import Info
 from modules.clustering import Clustering
 from modules.decomposition import Decomposition
 from modules.post import Post
+from modules.test import Test
 
-
-__all__ = [Visualization, Info, Regression, Classification, Clustering, Post, Statistic, Decomposition]
+__all__ = [Visualization, Info, Regression, Classification, Clustering, Post, Statistic, Decomposition, Test]
