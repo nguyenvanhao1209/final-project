@@ -6,7 +6,7 @@ import statsmodels.api as sm
 import scipy.stats as stats
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from sklearn import feature_selection
 from statsmodels.stats.anova import anova_lm
 from sklearn.metrics import mean_squared_error
@@ -24,6 +24,7 @@ def get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, targ
     # Evaluate the model
     mse = mean_squared_error(y_test, y_pred)
     rmse = np.sqrt(mse)
+    mae = mean_absolute_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
 
     # Display the results
@@ -43,7 +44,7 @@ def get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, targ
             coef_df = pd.DataFrame({"Feature": feature_names, "Coefficients": coefficients})
             
             # Display the DataFrame
-            st.dataframe(coef_df)
+            st.data_editor(coef_df)
 
     # Residuals Statistics\
     with col2:
@@ -53,12 +54,12 @@ def get_result(model, X, X_train, X_test, y_train, y_test, feature_columns, targ
         p_values_round = []
         for i in p_values:
             p_values_round.append("{:.3e}".format(i))
-        st.dataframe(
+        st.data_editor(
             pd.DataFrame({"Columns": X_train.columns, "F_value": f_values, "p_values": p_values_round}).set_index(
                 "Columns"))
     with col3:
         st.markdown("Model Summary")
-        st.dataframe(pd.DataFrame({"MSE": [mse], "RMSE": [rmse], "R-squared": [r2]}))
+        st.data_editor(pd.DataFrame({"MAE": [mae], "RMSE": [rmse], "R-squared": [r2]}))
 
     # Plot the predicted values vs. the actual values
     if hasattr(model, 'intercept_'):

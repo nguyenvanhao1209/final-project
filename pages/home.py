@@ -19,7 +19,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-from modules import Visualization, Info, Statistic , Regression, Classification, Clustering, Post, Decomposition
+from modules import Visualization, Info, Statistic , Regression, Classification, Clustering, Post, Decomposition, Test
 from components import Navbar, Footer, Content
 
 with open( "style.css" ) as css:
@@ -34,6 +34,8 @@ def load_data(file):
         return pd.read_csv(file)
     elif file_extension in ['.xlsx', '.xls']:
         return pd.read_excel(file)
+    elif file_extension == '.json':
+        return pd.read_json(file)
 
 @st.experimental_dialog("Profile 🏴‍☠️")
 def show_profile(user):
@@ -123,12 +125,12 @@ def main():
             })
         st.sidebar.markdown("---")
         st.markdown("#### Upload your data ####")
-        file = st.file_uploader("", type=["csv", "xlsx", "xls"])
+        files = st.file_uploader("", type=["csv", "xlsx", "json"], accept_multiple_files=True)
 
     with st.container():
-        if file is not None:
+        if files:
 
-            data = load_data(file)
+            data = load_data(files[0])
 
             if selected == 'Infomation':
                 Info.info(data)
